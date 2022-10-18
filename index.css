@@ -17,3 +17,13 @@
 .profile-img :hover img {
   transform: scale(1.5);
 }
+
+.tweets {
+  max-width: 500px;
+  max-height: 500px;
+}
+
+.twitter-timeline {
+  max-width: 500px;
+  max-height: 500px;
+}
