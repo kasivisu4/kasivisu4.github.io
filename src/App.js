@@ -2,11 +2,141 @@ import { Button } from "bootstrap";
 import "./App.css";
 import NavBar from "./NavBar";
 import Resume from "./Kasi_Resume.pdf";
+import { useRef } from "react";
+
 function App() {
+  const scrollToProjects = useRef();
+  const scrollToPublications = useRef();
   return (
     <div className="App">
-      <NavBar></NavBar>
+      <NavBar
+        projectScroll={scrollToProjects}
+        publicationsScroll={scrollToPublications}
+      ></NavBar>
       <div className="container d-flex flex-wrap">
+        <div className="right-container">
+          <div className="section-1">
+            <a href="https://git.io/typing-svg">
+              <img
+                src="https://readme-typing-svg.demolab.com?font=Fira+Code&duration=3000&pause=3000&color=76C2DE&repeat=false&width=435&height=100&lines=Hello+I'm+Kasi+Viswanath+Vandanapu%F0%9F%91%8B;I'm+looking+for+Summer'23+Internships..."
+                alt="Typing SVG"
+              />
+            </a>
+            <div className="Intro">
+              <p>
+                I am currently pursuing my Master's degree in Computer Science
+                at{" "}
+                <a href="https://sanfrancisco.northeastern.edu/">
+                  Northeastern University, San Francisco Campus
+                </a>{" "}
+                and I am currently in my third semester. As a part of my
+                academic curriculum, I have taken Human-Computer Interaction,
+                Data Visualization, Programming Design Paradigms, Natural
+                Language Processing and Machine Learning courses.
+              </p>
+              I am also working as a Research Assistant advised by Prof.{" "}
+              <a href="https://johnguerra.co/">John Alexis Guerra Gomez </a>. My
+              primary research focus is on developing a framework for
+              benchmarking in-browser data filtering techniques on Arquero,
+              DuckDB-WASM, and Vanilla JS. You could find more details about my
+              research
+              <a
+                className="link"
+                href="https://observablehq.com/d/dc562520a7fa44d0?collection=@kasivisu4/data-processing-benchmark"
+              >
+                here.
+              </a>
+            </div>
+          </div>
+          <div className="section-2">
+            <h5>Work Experience</h5>
+            <ul>
+              <li>
+                Infosys - Specialist Programmer (May'19 - Dec'21)
+                <br />
+                Worked for the following clients:
+                <ul>
+                  <li>
+                    Levi's : Built and deployed batch data pipelines in the
+                    Production Environment, scheduled and monitored complex data
+                    transformations using Apache Spark, Delta Lake, Databricks,
+                    Apache Airflow, and AWS services for the Demand Forecast
+                    Application
+                  </li>
+                  <li>
+                    Kraft Heinz : Implemented Event-driven framework for batch
+                    data pipelines and extended it to handle stream data
+                    pipelines using Google Cloud Platform Services
+                  </li>
+                  <li>
+                    HCSC : Developed, Scheduled and Monitored complex data
+                    pipelines using Pyspark and Zena scheduler
+                  </li>
+                </ul>
+              </li>
+              <br></br>
+              <li>
+                Health Edge Inc - Software Developer, Intern (Feb'19 - May'19)
+                <ul>
+                  <li>
+                    Built and tested microservice applications using tools such
+                    as Spring Boot, Hibernate and Apache Maven.
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+          <div ref={scrollToProjects} className="projects">
+            <h5>Projects</h5>
+            <ul>
+              <li>
+                <a href="https://github.com/bsander15/obm-nn">
+                  Combinatorial Optimization (Fall’22){" "}
+                </a>
+                : Trained neural network with reinforcement learning on
+                G-Mission dataset and achieved 87% optimality ratio on online
+                bipartite matching
+              </li>
+
+              <li>
+                <a href="https://www.figma.com/proto/0iePl2P2xORfNhmtRrn9sa/Kasi-HCI-Hi-Fi?node-id=14%3A10132&starting-point-node-id=14%3A10132">
+                  Apartment Finder (Fall’22){" "}
+                </a>
+                : Designed a Web Application to find the apartments that are
+                closer to specific locations and share the shortlisted with
+                friends/family to get their opinion
+              </li>
+
+              <li>
+                <a href="https://observablehq.com/@kasivisu4/hsd-visualization">
+                  Hate Speech Detection (Summer'22){" "}
+                </a>
+                : Created a dashboard to detect whether the text is hate,
+                offensive or neither speech. Published in the observable
+                platform
+              </li>
+
+              <li>
+                <a href="https://github.com/kasivisu4/cordiance-experential-project">
+                  Cordiance Project (Spring'22){" "}
+                </a>
+                : This is an experiential Algorithm course project in
+                collaboration with the Cordiance Company. The goal of this
+                project is to get the closest possible UNSPSC code match for the
+                Avalara Tax description
+              </li>
+            </ul>
+          </div>
+          <div ref={scrollToPublications} className="publication">
+            <h5>Publications</h5>
+            <a href="https://ieeexplore.ieee.org/author/37086530665">
+              Hadoop and Natural Language Processing Based Analysis on Kisan
+              Call Center (KCC) Data
+            </a>
+            ; 2018 International Conference on Advances in Computing,
+            Communication, and Informatics.
+          </div>
+        </div>
         <div className="left-container d-flex flex-row">
           <img
             src="/profile.jpg"
@@ -93,41 +223,6 @@ function App() {
                 href="https://www.facebook.com/vandanapu.kasi/"
               >
                 Facebook
-              </a>
-            </div>
-          </div>
-        </div>
-        <div className="right-container">
-          <div className="section-1">
-            <a href="https://git.io/typing-svg">
-              <img
-                src="https://readme-typing-svg.demolab.com?font=Fira+Code&duration=3000&pause=3000&color=76C2DE&repeat=false&width=435&height=100&lines=Hello+I'm+Kasi+Viswanath+Vandanapu%F0%9F%91%8B;I'm+looking+for+Summer'23+Internships..."
-                alt="Typing SVG"
-              />
-            </a>
-            <div className="Intro">
-              <p>
-                I am currently pursuing my Master's degree in Computer Science
-                at{" "}
-                <a href="https://sanfrancisco.northeastern.edu/">
-                  Northeastern University, San Francisco Campus
-                </a>{" "}
-                and I am currently in my third semester. As a part of my
-                academic curriculum, I have taken Human-Computer Interaction,
-                Data Visualization, Programming Design Paradigms, Natural
-                Language Processing and Machine Learning courses.
-              </p>
-              I am also working as a Research Assistant advised by Prof.{" "}
-              <a href="https://johnguerra.co/">John Alexis Guerra Gomez </a>. My
-              primary research focus is on developing a framework for
-              benchmarking in-browser data filtering techniques on Arquero,
-              DuckDB-WASM, and Vanilla JS. You could find more details about my
-              research
-              <a
-                className="link"
-                href="https://observablehq.com/d/dc562520a7fa44d0?collection=@kasivisu4/data-processing-benchmark"
-              >
-                here.
               </a>
             </div>
           </div>

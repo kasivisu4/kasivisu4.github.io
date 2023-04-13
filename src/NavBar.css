@@ -2,6 +2,10 @@
     text-decoration: underline;
 }
 
+.navbar{
+    position: fixed;
+}
+
 .container{
     right: 0;
     position: relative;

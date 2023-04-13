@@ -1,8 +1,8 @@
 import "./NavBar.css";
-function NavBar() {
+function NavBar({ projectScroll, publicationsScroll }) {
   return (
     <div>
-      <nav className="navbar navbar-expand-lg border-bottom">
+      <nav className="navbar navbar-expand-lg w-100 border-bottom">
         <div className="container justify-content-between">
           <div>
             <a className="navbar-brand" href="#">
@@ -26,14 +26,20 @@ function NavBar() {
           >
             <ul className="navbar-nav">
               <li className="nav-item">
-                <a className="nav-link" href="#">
+                <button
+                  className="nav-link"
+                  onClick={() => projectScroll.current.scrollIntoView()}
+                >
                   Projects
-                </a>
+                </button>
               </li>
               <li className="nav-item">
-                <a className="nav-link" href="#">
+                <button
+                  className="nav-link"
+                  onClick={() => publicationsScroll.current.scrollIntoView()}
+                >
                   Publications
-                </a>
+                </button>
               </li>
             </ul>
           </div>
