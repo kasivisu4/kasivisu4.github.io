@@ -1,0 +1,11 @@
+.nav-link:hover {
+    text-decoration: underline;
+}
+
+.container{
+    right: 0;
+    position: relative;
+}
+.right{
+    padding-left: 60%
+}
