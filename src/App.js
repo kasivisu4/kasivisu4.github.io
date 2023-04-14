@@ -7,11 +7,13 @@ import { useRef } from "react";
 function App() {
   const scrollToProjects = useRef();
   const scrollToPublications = useRef();
+  const scrollToResearch = useRef();
   return (
     <div className="App">
       <NavBar
         projectScroll={scrollToProjects}
         publicationsScroll={scrollToPublications}
+        researchScroll={scrollToResearch}
       ></NavBar>
       <div className="container d-flex flex-wrap">
         <div className="right-container">
@@ -129,12 +131,54 @@ function App() {
           </div>
           <div ref={scrollToPublications} className="publication">
             <h5>Publications</h5>
-            <a href="https://ieeexplore.ieee.org/author/37086530665">
-              Hadoop and Natural Language Processing Based Analysis on Kisan
-              Call Center (KCC) Data
-            </a>
-            ; 2018 International Conference on Advances in Computing,
-            Communication, and Informatics.
+            <ul>
+              <li>
+                <a href="https://ieeexplore.ieee.org/author/37086530665">
+                  Hadoop and Natural Language Processing Based Analysis on Kisan
+                  Call Center (KCC) Data
+                </a>
+                ; 2018 International Conference on Advances in Computing,
+                Communication, and Informatics.
+              </li>
+            </ul>
+          </div>
+          <div ref={scrollToResearch} className="research">
+            <h5>Research</h5>
+            <ul>
+              <li>
+                <a href="https://observablehq.com/collection/@kasivisu4/data-processing-benchmark">
+                  Spring'23{" "}
+                </a>
+                : Working On Benchmarking In Browser backends such as Arquero,
+                Duck-DB WASM and VanillaJS (Under Guidance of Prof. John Alexis
+                Guerra Gomez)
+              </li>
+              <li>
+                <a href="https://observablehq.com/collection/@kasivisu4/data-processing-benchmark">
+                  Fall'22{" "}
+                </a>
+                : Worked on prototyping List Curator Application which is a
+                Reusable data curation framework developing with HCI Design
+                Guidelines (Under Guidance of Prof. John Alexis Guerra Gomez)
+              </li>
+              <li>
+                <a href="https://observablehq.com/collection/@kasivisu4/data-processing-benchmark">
+                  Summer'22{" "}
+                </a>
+                : Worked on prototyping List Curator Application mainly
+                concentrated on developing filterer that having features such as
+                Cross Filter, filter with Advanced Data Transformations (Under
+                Guidance of Prof. John Alexis Guerra Gomez)
+              </li>
+              <li>
+                <a href="https://www.linkedin.com/in/saravanan-selvam-69830461">
+                  Dec'17-May'18{" "}
+                </a>
+                : Worked on Analyzing Indian Kisan Call Center Data using Hadoop
+                and Natural Language Processing (Under Guidance of Prof.
+                Saravanan Selvam)
+              </li>
+            </ul>
           </div>
         </div>
         <div className="left-container d-flex flex-row">
@@ -169,6 +213,21 @@ function App() {
               </svg>
               <a className="contact-link" href="mailto:kasivisu3109@gmail.com">
                 kasivisu3109@gmail.com
+              </a>
+            </div>
+            <div className="Githbu">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                fill="currentColor"
+                class="bi bi-github"
+                viewBox="0 0 16 16"
+              >
+                <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z" />
+              </svg>
+              <a className="contact-link" href="https://github.com/kasivisu4">
+                GitHub
               </a>
             </div>
             <div className="linkedin">
