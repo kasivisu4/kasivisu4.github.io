@@ -1,5 +1,10 @@
 import "./NavBar.css";
-function NavBar({ projectScroll, publicationsScroll, researchScroll }) {
+function NavBar({
+  projectScroll,
+  publicationsScroll,
+  researchScroll,
+  activitiesScroll,
+}) {
   return (
     <div>
       <nav className="navbar navbar-expand-lg w-100 border-bottom">
@@ -47,6 +52,14 @@ function NavBar({ projectScroll, publicationsScroll, researchScroll }) {
                   onClick={() => researchScroll.current.scrollIntoView()}
                 >
                   Research
+                </button>
+              </li>
+              <li className="nav-item">
+                <button
+                  className="nav-link"
+                  onClick={() => activitiesScroll.current.scrollIntoView()}
+                >
+                  Activities
                 </button>
               </li>
             </ul>

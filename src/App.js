@@ -1,4 +1,5 @@
 import { Button } from "bootstrap";
+import logo from "./logo.svg";
 import "./App.css";
 import NavBar from "./NavBar";
 import Resume from "./Kasi_Resume.pdf";
@@ -8,12 +9,14 @@ function App() {
   const scrollToProjects = useRef();
   const scrollToPublications = useRef();
   const scrollToResearch = useRef();
+  const scrollToActivities = useRef();
   return (
     <div className="App">
       <NavBar
         projectScroll={scrollToProjects}
         publicationsScroll={scrollToPublications}
         researchScroll={scrollToResearch}
+        activitiesScroll={scrollToActivities}
       ></NavBar>
       <div className="container d-flex flex-wrap">
         <div className="right-container">
@@ -86,6 +89,18 @@ function App() {
                   </li>
                 </ul>
               </li>
+              <br></br>
+
+              <li>
+                Virtusa - Technology, Intern (Jun'18 - May'18)
+                <ul>
+                  <li>
+                    Gained Industrial exposure to the Apache Kafka framework
+                    while implementing a schema generator for sample data using
+                    Hadoop (MapReduce) and Python.
+                  </li>
+                </ul>
+              </li>
             </ul>
           </div>
           <div ref={scrollToProjects} className="projects">
@@ -130,15 +145,36 @@ function App() {
             </ul>
           </div>
           <div ref={scrollToPublications} className="publication">
-            <h5>Publications</h5>
+            <h5>Publications / Contributions </h5>
             <ul>
+              <li>
+                <a href="https://startsfoundation.org/"> Starts Foundation </a>
+                :Contributor in building the Starts Foundation website, an NGO
+                based in Nepal. Developed with Gatsby, React, and Sanity Studio.{" "}
+                <a href="https://github.com/yianan261/StartsFoundation">
+                  {" "}
+                  [Source Code]
+                </a>
+              </li>
+              <li>
+                <a href="https://observablehq.com/@john-guerra/multi-auto-select">
+                  {" "}
+                  Nested Selection{" "}
+                </a>
+                :Added a new feature to simplify UI that allows users to select
+                multiple items within the same element. For instance, they can
+                choose both State & Gender simultaneously, in one selection
+                <a href="https://observablehq.com/@john-guerra/multi-auto-select">
+                  [Notebook]
+                </a>
+              </li>
               <li>
                 <a href="https://ieeexplore.ieee.org/author/37086530665">
                   Hadoop and Natural Language Processing Based Analysis on Kisan
                   Call Center (KCC) Data
                 </a>
-                ; 2018 International Conference on Advances in Computing,
-                Communication, and Informatics.
+                : Published in 2018 International Conference on Advances in
+                Computing, Communication, and Informatics.
               </li>
             </ul>
           </div>
@@ -149,7 +185,7 @@ function App() {
                 <a href="https://observablehq.com/collection/@kasivisu4/data-processing-benchmark">
                   Spring'23{" "}
                 </a>
-                : Working On Benchmarking In Browser backends such as Arquero,
+                : Working on Benchmarking In Browser backends such as Arquero,
                 Duck-DB WASM and VanillaJS (Under Guidance of Prof. John Alexis
                 Guerra Gomez)
               </li>
@@ -177,6 +213,26 @@ function App() {
                 : Worked on Analyzing Indian Kisan Call Center Data using Hadoop
                 and Natural Language Processing (Under Guidance of Prof.
                 Saravanan Selvam)
+              </li>
+            </ul>
+          </div>
+          <div ref={scrollToActivities} className="activities">
+            <h5> Activities</h5>
+            <ul>
+              <li>
+                <a href="https://www.khoury.northeastern.edu/event/40th-anniversary-of-khoury-college-silicon-valley-celebration/">
+                  Khoury'40{" "}
+                </a>
+                :Presented my research on a reusable widget called Data Filter
+                at Northeastern University's Silicon Valley Campus{" "}
+                <a href="https://www.figma.com/proto/S4oBQiDJ1OgIxZpLfpBzwm/Data-Filter-Poster?node-id=7-3&scaling=scale-down">
+                  [Poster]
+                </a>
+              </li>
+              <li>
+                <a href="http://fotofiesta2k18.website2.me/">FotoFiesta2k18 </a>
+                :Being Secretary of Smriti - The Photography & Design Club,
+                hosted FotoFiesta2k18(flagship event)
               </li>
             </ul>
           </div>
@@ -284,6 +340,10 @@ function App() {
                 Facebook
               </a>
             </div>
+            {/* <div className="footer">
+              Made in React
+              <img src={logo} className="App-logo" alt="logo" />
+            </div> */}
           </div>
         </div>
       </div>
