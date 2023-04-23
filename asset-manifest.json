@@ -1,16 +1,17 @@
 {
   "files": {
-    "main.css": "/static/css/main.11308ddb.css",
-    "main.js": "/static/js/main.dbf5ee85.js",
+    "main.css": "/static/css/main.bf7e9925.css",
+    "main.js": "/static/js/main.73e1e494.js",
     "static/js/787.1ed0c42c.chunk.js": "/static/js/787.1ed0c42c.chunk.js",
     "static/media/Kasi_Resume.pdf": "/static/media/Kasi_Resume.39155ff4ea96b8d0bb97.pdf",
+    "static/media/logo.svg": "/static/media/logo.6ce24c58023cc2f8fd88fe9d219db6c6.svg",
     "index.html": "/index.html",
-    "main.11308ddb.css.map": "/static/css/main.11308ddb.css.map",
-    "main.dbf5ee85.js.map": "/static/js/main.dbf5ee85.js.map",
+    "main.bf7e9925.css.map": "/static/css/main.bf7e9925.css.map",
+    "main.73e1e494.js.map": "/static/js/main.73e1e494.js.map",
     "787.1ed0c42c.chunk.js.map": "/static/js/787.1ed0c42c.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.11308ddb.css",
-    "static/js/main.dbf5ee85.js"
+    "static/css/main.bf7e9925.css",
+    "static/js/main.73e1e494.js"
   ]
 }
