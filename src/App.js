@@ -116,7 +116,7 @@ function App() {
               </li>
 
               <li>
-                <a href="https://www.figma.com/proto/0iePl2P2xORfNhmtRrn9sa/Kasi-HCI-Hi-Fi?node-id=14%3A10132&starting-point-node-id=14%3A10132">
+                <a href="https://www.figma.com/proto/0iePl2P2xORfNhmtRrn9sa/Kasi-HCI-Hi-Fi?node-id=14-10132&starting-point-node-id=14%3A10132">
                   Apartment Finder (Fall’22){" "}
                 </a>
                 : Designed a Web Application to find the apartments that are
@@ -182,7 +182,7 @@ function App() {
             <h5>Research</h5>
             <ul>
               <li>
-                <a href="https://observablehq.com/collection/@kasivisu4/data-processing-benchmark">
+                <a href="https://observablehq.com/collection/@kasivisu4/data-filtering-benchmark">
                   Spring'23{" "}
                 </a>
                 : Working on Benchmarking In Browser backends such as Arquero,
@@ -190,7 +190,7 @@ function App() {
                 Guerra Gomez)
               </li>
               <li>
-                <a href="https://observablehq.com/collection/@kasivisu4/data-processing-benchmark">
+                <a href="https://observablehq.com/@kasivisu4/list-curator-home-page?collection=@kasivisu4/list_curator">
                   Fall'22{" "}
                 </a>
                 : Worked on prototyping List Curator Application which is a
@@ -198,7 +198,7 @@ function App() {
                 Guidelines (Under Guidance of Prof. John Alexis Guerra Gomez)
               </li>
               <li>
-                <a href="https://observablehq.com/collection/@kasivisu4/data-processing-benchmark">
+                <a href="https://observablehq.com/@kasivisu4/data_filterer?collection=@kasivisu4/list_curator">
                   Summer'22{" "}
                 </a>
                 : Worked on prototyping List Curator Application mainly
@@ -207,12 +207,9 @@ function App() {
                 Guidance of Prof. John Alexis Guerra Gomez)
               </li>
               <li>
-                <a href="https://www.linkedin.com/in/saravanan-selvam-69830461">
-                  Dec'17-May'18{" "}
-                </a>
-                : Worked on Analyzing Indian Kisan Call Center Data using Hadoop
-                and Natural Language Processing (Under Guidance of Prof.
-                Saravanan Selvam)
+                <a href="#">Dec'17-May'18 </a>: Worked on Analyzing Indian Kisan
+                Call Center Data using Hadoop and Natural Language Processing
+                (Under Guidance of Prof. Saravanan Selvam)
               </li>
             </ul>
           </div>
