@@ -68,6 +68,7 @@ position: fixed;
 .Intro{
   text-align: left;
   padding-left: 30%;
+  padding-top: 3em;
   max-width: 1400px;
 }
 

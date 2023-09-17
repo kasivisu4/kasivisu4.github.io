@@ -21,12 +21,6 @@ function App() {
       <div className="container d-flex flex-wrap">
         <div className="right-container">
           <div className="section-1">
-            <a href="https://git.io/typing-svg">
-              <img
-                src="https://readme-typing-svg.demolab.com?font=Fira+Code&duration=3000&pause=3000&color=76C2DE&repeat=false&width=435&height=100&lines=Hello+I'm+Kasi+Viswanath+Vandanapu%F0%9F%91%8B;I'm+looking+for+Summer'23+Internships..."
-                alt="Typing SVG"
-              />
-            </a>
             <div className="Intro">
               <p>
                 I am currently pursuing my Master's degree in Computer Science
