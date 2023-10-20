@@ -141,28 +141,27 @@ function App() {
           <div className="section-1">
             <div className="Intro p-1 p-md-5">
               <p>
-                I am currently pursuing my Master's degree in Computer Science
-                at{" "}
-                <a href="https://sanfrancisco.northeastern.edu/">
-                  Northeastern University, San Francisco Campus
+                I am a Computer Science graduate student at Northeastern
+                University, San Francisco campus. I am in my final semester and
+                set to graduate in December, 2023. During my Master's, I have
+                gained skills in areas such as Web Development, Data
+                Visualization, Computer Human Interaction and Natural Language
+                Processing. As a part of my curriculum, I got the opportunity to
+                work under supervision of Prof.{" "}
+                <a href="https://johnguerra.co/">John Alexis Guerra Gomez</a> on
+                a{" "}
+                <a href="https://observablehq.com/@kasivisu4/filtering-benchmark-intro?collection=@kasivisu4/data-filtering-benchmark">
+                  Research Project
                 </a>{" "}
-                and I am currently in my third semester. As a part of my
-                academic curriculum, I have taken Human-Computer Interaction,
-                Data Visualization, Programming Design Paradigms, Natural
-                Language Processing and Machine Learning courses.
+                that evaluates performance of different data processing
+                libraries.
+                <br></br>
+                <br />I have 2+ years of experience working as a Software
+                Engineer and Data Engineer at Infosys and Health Edge. I have a
+                deep passion for building framework utilizing advanced
+                technologies. Being a part of Software Engineer community I look
+                forward to learn and grow in my career
               </p>
-              I am also working as a Research Assistant advised by Prof.{" "}
-              <a href="https://johnguerra.co/">John Alexis Guerra Gomez </a>. My
-              primary research focus is on developing a framework for
-              benchmarking in-browser data filtering techniques on Arquero,
-              DuckDB-WASM, and Vanilla JS. You could find more details about my
-              research
-              <a
-                className="link"
-                href="https://observablehq.com/d/dc562520a7fa44d0?collection=@kasivisu4/data-processing-benchmark"
-              >
-                here.
-              </a>
             </div>
           </div>
           <div className="section-2 p-1 p-md-5">
