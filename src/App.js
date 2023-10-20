@@ -2,7 +2,7 @@ import { Button } from "bootstrap";
 import logo from "./logo.svg";
 import "./App.css";
 import NavBar from "./NavBar";
-import Resume from "./Kasi_Resume.pdf";
+import Resume from "./kasi_vandanapu_resume.pdf";
 import { useRef } from "react";
 
 function App() {
