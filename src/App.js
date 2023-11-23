@@ -160,7 +160,7 @@ function App() {
                 Engineer and Data Engineer at Infosys and Health Edge. I have a
                 deep passion for building framework utilizing advanced
                 technologies. Being a part of Software Engineer community I look
-                forward to learn and grow in my career
+                forward to learn and grow in my career.
               </p>
             </div>
           </div>
@@ -177,16 +177,16 @@ function App() {
                     Production Environment, scheduled and monitored complex data
                     transformations using Apache Spark, Delta Lake, Databricks,
                     Apache Airflow, and AWS services for the Demand Forecast
-                    Application
+                    Application.
                   </li>
                   <li>
                     Kraft Heinz : Implemented Event-driven framework for batch
                     data pipelines and extended it to handle stream data
-                    pipelines using Google Cloud Platform Services
+                    pipelines using Google Cloud Platform Services.
                   </li>
                   <li>
                     HCSC : Developed, Scheduled and Monitored complex data
-                    pipelines using Pyspark and Zena scheduler
+                    pipelines using Pyspark and Zena scheduler.
                   </li>
                 </ul>
               </li>
@@ -223,7 +223,7 @@ function App() {
                 </a>
                 : Trained neural network with reinforcement learning on
                 G-Mission dataset and achieved 87% optimality ratio on online
-                bipartite matching
+                bipartite matching.
               </li>
 
               <li>
@@ -232,7 +232,7 @@ function App() {
                 </a>
                 : Designed a Web Application to find the apartments that are
                 closer to specific locations and share the shortlisted with
-                friends/family to get their opinion
+                friends/family to get their opinion.
               </li>
 
               <li>
@@ -241,7 +241,7 @@ function App() {
                 </a>
                 : Created a dashboard to detect whether the text is hate,
                 offensive or neither speech. Published in the observable
-                platform
+                platform.
               </li>
 
               <li>
@@ -251,7 +251,7 @@ function App() {
                 : This is an experiential Algorithm course project in
                 collaboration with the Cordiance Company. The goal of this
                 project is to get the closest possible UNSPSC code match for the
-                Avalara Tax description
+                Avalara Tax description.
               </li>
             </ul>
           </div>
@@ -274,7 +274,7 @@ function App() {
                 </a>
                 :Added a new feature to simplify UI that allows users to select
                 multiple items within the same element. For instance, they can
-                choose both State & Gender simultaneously, in one selection
+                choose both State & Gender simultaneously, in one selection.
                 <a href="https://observablehq.com/@john-guerra/multi-auto-select">
                   [Notebook]
                 </a>
@@ -298,7 +298,7 @@ function App() {
                 </a>
                 : Working on Benchmarking In Browser backends such as Arquero,
                 Duck-DB WASM and VanillaJS (Under Guidance of Prof. John Alexis
-                Guerra Gomez)
+                Guerra Gomez).
               </li>
               <li>
                 <a href="https://observablehq.com/@kasivisu4/list-curator-home-page?collection=@kasivisu4/list_curator">
@@ -306,7 +306,7 @@ function App() {
                 </a>
                 : Worked on prototyping List Curator Application which is a
                 Reusable data curation framework developing with HCI Design
-                Guidelines (Under Guidance of Prof. John Alexis Guerra Gomez)
+                Guidelines (Under Guidance of Prof. John Alexis Guerra Gomez).
               </li>
               <li>
                 <a href="https://observablehq.com/@kasivisu4/data_filterer?collection=@kasivisu4/list_curator">
@@ -315,12 +315,12 @@ function App() {
                 : Worked on prototyping List Curator Application mainly
                 concentrated on developing filterer that having features such as
                 Cross Filter, filter with Advanced Data Transformations (Under
-                Guidance of Prof. John Alexis Guerra Gomez)
+                Guidance of Prof. John Alexis Guerra Gomez).
               </li>
               <li>
                 <a href="#">Dec'17-May'18 </a>: Worked on Analyzing Indian Kisan
                 Call Center Data using Hadoop and Natural Language Processing
-                (Under Guidance of Prof. Saravanan Selvam)
+                (Under Guidance of Prof. Saravanan Selvam).
               </li>
             </ul>
           </div>
@@ -328,19 +328,22 @@ function App() {
             <h5> Activities</h5>
             <ul>
               <li>
-                <a href="https://www.khoury.northeastern.edu/event/40th-anniversary-of-khoury-college-silicon-valley-celebration/">
-                  Khoury'40{" "}
+                <a href="https://news.northeastern.edu/2023/11/21/experiential-entrepreneurship-summit-oakland-hackathon/">
+                  Summit Hackathon'23
                 </a>
-                :Presented my research on a reusable widget called Data Filter
-                at Northeastern University's Silicon Valley Campus{" "}
-                <a href="https://www.figma.com/proto/S4oBQiDJ1OgIxZpLfpBzwm/Data-Filter-Poster?node-id=7-3&scaling=scale-down">
-                  [Poster]
-                </a>
+                : Mentored at Experiential Entrepreneurship Hackathon, aimed at
+                benefiting Oakland Community.
               </li>
               <li>
                 <a href="http://fotofiesta2k18.website2.me/">FotoFiesta2k18 </a>
-                :Being Secretary of Smriti - The Photography & Design Club,
-                hosted FotoFiesta2k18(flagship event)
+                : Being Secretary of Smriti - The Photography & Design Club,
+                hosted FotoFiesta2k18(flagship event).
+              </li>
+
+              <li>
+                <a href="http://fotofiesta2k18.website2.me/">FotoFiesta2k18 </a>
+                : Being Secretary of Smriti - The Photography & Design Club,
+                hosted FotoFiesta2k18(flagship event).
               </li>
             </ul>
           </div>
