@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/static/css/main.30c4714c.css",
-    "main.js": "/static/js/main.069f6fee.js",
-    "static/js/787.1ed0c42c.chunk.js": "/static/js/787.1ed0c42c.chunk.js",
-    "index.html": "/index.html",
-    "main.30c4714c.css.map": "/static/css/main.30c4714c.css.map",
-    "main.069f6fee.js.map": "/static/js/main.069f6fee.js.map",
-    "787.1ed0c42c.chunk.js.map": "/static/js/787.1ed0c42c.chunk.js.map"
+    "main.css": "/kasivisu4.github.io/static/css/main.30c4714c.css",
+    "main.js": "/kasivisu4.github.io/static/js/main.905243cf.js",
+    "static/js/787.1ed0c42c.chunk.js": "/kasivisu4.github.io/static/js/787.1ed0c42c.chunk.js",
+    "index.html": "/kasivisu4.github.io/index.html",
+    "main.30c4714c.css.map": "/kasivisu4.github.io/static/css/main.30c4714c.css.map",
+    "main.905243cf.js.map": "/kasivisu4.github.io/static/js/main.905243cf.js.map",
+    "787.1ed0c42c.chunk.js.map": "/kasivisu4.github.io/static/js/787.1ed0c42c.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.30c4714c.css",
-    "static/js/main.069f6fee.js"
+    "static/js/main.905243cf.js"
   ]
 }
