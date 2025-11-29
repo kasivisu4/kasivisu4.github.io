@@ -62,7 +62,7 @@ const About = () => {
             <h2 className="section-title">Introduction</h2>
             <div className="intro-content">
               <p className="intro-text">
-                I am a passionate Data Engineer and AI researcher with over 4
+                I am a passionate Data Engineer and AI researcher with over 5
                 years of experience in building scalable data solutions and
                 machine learning applications. My journey in technology began at
                 Amrita School of Engineering, where I earned my Bachelor's in
