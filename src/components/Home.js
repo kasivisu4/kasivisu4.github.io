@@ -184,7 +184,7 @@ const Home = () => {
             transition={{ duration: 0.8, delay: 0.3 }}
           >
             <div className="stat-item">
-              <h3>4+</h3>
+              <h3>5</h3>
               <p>Years Experience</p>
             </div>
             <div className="stat-item">
