@@ -1,6 +1,6 @@
 {
   "files": {
-    "main.css": "/static/css/main.5d5ca98c.css",
+    "main.css": "/static/css/main.07509849.css",
     "main.js": "/static/js/main.b9430254.js",
     "static/js/417.34a55666.chunk.js": "/static/js/417.34a55666.chunk.js",
     "static/js/787.1ed0c42c.chunk.js": "/static/js/787.1ed0c42c.chunk.js",
@@ -9,13 +9,13 @@
     "static/media/kasi_resume_v10.pdf": "/static/media/kasi_resume_v10.72ef0cef64b77c776418.pdf",
     "static/media/viz_observable.png": "/static/media/viz_observable.9b8771aaeed67d8dff13.png",
     "index.html": "/index.html",
-    "main.5d5ca98c.css.map": "/static/css/main.5d5ca98c.css.map",
+    "main.07509849.css.map": "/static/css/main.07509849.css.map",
     "main.b9430254.js.map": "/static/js/main.b9430254.js.map",
     "417.34a55666.chunk.js.map": "/static/js/417.34a55666.chunk.js.map",
     "787.1ed0c42c.chunk.js.map": "/static/js/787.1ed0c42c.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.5d5ca98c.css",
+    "static/css/main.07509849.css",
     "static/js/main.b9430254.js"
   ]
 }
