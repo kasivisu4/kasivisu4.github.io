@@ -6,7 +6,6 @@ import Home from "./components/Home";
 function App() {
   return (
     <div className="App">
-      <NavBar />
       <main className="main-content">
         <Home />
       </main>

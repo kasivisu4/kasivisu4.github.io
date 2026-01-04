@@ -4,51 +4,53 @@ import {
   FaGithub,
   FaLinkedin,
   FaEnvelope,
-  FaPhone,
   FaMapMarkerAlt,
-  FaBriefcase,
-  FaGraduationCap,
-  FaLaptopCode,
-  FaBrain,
-  FaChartLine,
   FaCalendarAlt,
-  FaExternalLinkAlt,
   FaTag,
+  FaBook,
+  FaGraduationCap,
+  FaTwitter,
+  FaFileAlt,
+  FaExternalLinkAlt,
+  FaChartBar,
+  FaFileDownload,
+  FaChartLine
 } from "react-icons/fa";
+import { SiTableau, SiObservable } from "react-icons/si";
 import "./Home.css";
+/* Import the local resume file. Adjust path if necessary based on folder structure. 
+   Assuming Home.js is in src/components, and resume is in src/kasi_resume_v10.pdf 
+*/
+import resumePdf from "../kasi_resume_v10.pdf";
+
+import CodingActivity from './CodingActivity';
 
 const Home = () => {
-  const scrollToSection = (sectionId) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
-    }
-  };
-
+  // Data Definition
   const experiences = [
     {
       id: 1,
-      title: "Python Developer",
+      title: "Lead Python Developer",
       company: "Virtusa (Consulting for Citi Bank)",
       period: "Jun'24 – Present",
-      location: "Remote",
+      location: "Tampa, Florida",
       achievements: [
-        "Designed and implemented microservices with REST APIs using FastAPI to extract, validate, transform, and load metadata into MongoDB and Oracle database, supporting input from XLSX file, and database sources.",
-        "Migrated data validation scripts to Python, utilizing vectorized operations to reduce execution time by 60%, and deployed as a scalable microservice to support future data growth, optimizing request throughput.",
-        "Led a team of two interns for the Maphub project, serving as the primary developer responsible for architecture, implementation, and mentorship.",
-        "Integrated real-time ML training and inference using AWS AutoGluon, enabling a fully UI-driven workflow where users can train, version, and deploy models for live predictions via the Maphub Data Studio.",
+        "Designed and implemented microservices with REST APIs using FastAPI to extract, validate, transform, and load metadata into MongoDB and Oracle database.",
+        "Migrated data validation scripts to Python, utilizing vectorized operations to reduce execution time by 60%, and deployed as a scalable microservice.",
+        "Lead developer for Maphub project, driving architecture design, implementation, and mentorship.",
+        "Integrated real-time ML training and inference using AWS AutoGluon, enabling a fully UI-driven workflow.",
       ],
     },
     {
       id: 2,
-      title: "Data Engineer",
+      title: "Specialist Programmer",
       company: "Infosys",
       period: "May'19 – Dec'21",
       location: "Hyderabad, India",
       achievements: [
-        "Engineered a scalable streaming data pipeline on GCP, utilizing Pub/Sub and Cloud Run for automated data ingestion and processing. This enabled real-time insights into store trends, driving a 15% increase in sales and accelerating data-driven decision-making.",
-        "Built and managed independently four complex ETL batch data pipelines using Apache PySpark, Delta Lake, Databricks, Apache Airflow, and AWS services, serving three clients: Levi's, Kraft Heinz, and HCSC.",
-        "Optimized data processing performance and resource utilization by strategically implementing window functions, leading to 30% reduction in Spark job runtime and 15% decrease in cluster memory usage.",
+        "Engineered a scalable streaming data pipeline on GCP, utilizing Pub/Sub and Cloud Run for automated data ingestion and processing.",
+        "Built and managed independently four complex ETL batch data pipelines using Apache PySpark, Delta Lake, Databricks, Apache Airflow, and AWS services.",
+        "Optimized data processing performance and resource utilization by strategically implementing window functions, leading to 30% reduction in Spark job runtime.",
       ],
     },
   ];
@@ -62,6 +64,7 @@ const Home = () => {
         "AI-driven mobile app that generates personalized travel recommendations based on Google Maps data and user preference.",
       technologies: ["Flutter", "Firebase", "LangChain", "Gemini"],
       featured: true,
+      link: "https://ai.google.dev/competition/projects/wander-finds",
     },
     {
       id: 2,
@@ -71,241 +74,162 @@ const Home = () => {
         "Developed an interactive dashboard to analyze entrepreneur participation across industries and states, highlighting trends in valuations.",
       technologies: ["Data Analysis", "D3.js", "JavaScript", "Tableau"],
       featured: true,
+      link: "https://akhilasulgante.github.io/SharkTankInViz/",
     },
     {
       id: 3,
       title: "Hate Speech Detection",
       subtitle: "Summer'22",
       description:
-        "Developed a hate speech detection tool deployed on Observable, enabling real-time text classification as hate, offensive, or neutral.",
+        "Developed an in-browser hate speech detection dashboard, enabling real-time text classification as hate, offensive, or neutral categories.",
       technologies: ["ML", "XGBoost + TF-IDF", "Pyodide"],
       featured: false,
+      link: "https://observablehq.com/@kasivisu4/hsd-visualization",
     },
   ];
 
   const skills = {
     Languages: ["Python", "JavaScript", "Java", "Bash", "C"],
-    "Data Engineering": ["Apache PySpark", "Apache Airflow", "Pandas"],
-    "Cloud Technologies": [
-      "GCP - BigQuery",
-      "Cloud Function",
-      "Cloud Run",
-      "Cloud Build",
-      "Kubernetes",
-    ],
     Databases: ["MongoDB", "MySQL", "Postgres", "DuckDB", "SQLite"],
-    "Data Visualization": ["Vega-lite", "D3.js", "Tableau"],
+    "Workflow & Platforms": ["Delta Lake", "Apache Spark", "Airflow", "Databricks", "Tableau", "D3.js"],
+    "ML Tools": ["AWS AutoGluon", "GCP Cloud Run", "LangChain", "Scikit-learn", "XGBoost", "Pyodide"],
+    Certifications: ["PCAP™ – Certified Associate Python Programmer", "Smart Analytics, ML, and AI on GCP"],
   };
 
+  const education = [
+    {
+      id: 1,
+      school: "Northeastern University",
+      degree: "Master's in Computer Science",
+      period: "Jan'22 – Dec'23",
+      details: [
+        "Teaching Assistant - Database Management Systems; Human-Computer Interaction",
+        "Research Assistant - List Curator (Summer'22 - Fall'23)"
+      ]
+    },
+    {
+      id: 2,
+      school: "Amrita School of Engineering",
+      degree: "Bachelor of Technology in Computer Science",
+      period: "Aug'15 – May'19",
+      details: []
+    }
+  ];
+
+  const publications = [
+    {
+      id: 1,
+      title: "Hadoop and Natural Language Processing Based Analysis on Kisan Call Center (KCC) Data",
+      conference: "2018 International Conference on Advances in Computing, Communication, and Informatics",
+      role: "Author: Vandanapu kasi"
+    }
+  ];
+
   return (
-    <div className="home">
-      {/* Hero Section */}
-      <section id="hero" className="hero-section">
-        <div className="hero-container">
-          <motion.div
-            className="hero-content"
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
+    <div className="home-split-layout">
+      {/* Sidebar Section */}
+      <aside className="sidebar">
+        <div className="sidebar-content">
+          <motion.div 
+            className="profile-header"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
           >
-            <div className="profile-section">
-              <motion.div
-                className="profile-image-container"
-                whileHover={{ scale: 1.05 }}
-                transition={{ duration: 0.3 }}
-              >
-                <img
-                  src="/profile.jpg"
-                  alt="Kasi Vandanapu"
-                  className="profile-image"
-                />
-              </motion.div>
-
-              <div className="profile-info">
-                <h1 className="name">Kasi Vandanapu</h1>
-                <h2 className="title">Python Developer</h2>
-                <p className="summary">
-                  Python Developer with experience in microservices, data
-                  engineering, and research. Led projects in scalable backend
-                  development, real-time ML workflows, and cloud-native
-                  solutions. Passionate about building robust, data-driven
-                  applications and contributing to impactful research.
-                </p>
-              </div>
+            <div className="profile-image-wrapper">
+              <img
+                src="/profile.png"
+                alt="Kasi Vandanapu"
+                className="profile-image"
+              />
             </div>
+            <h1 className="name">
+              <span className="accent-char">K</span>asi <span className="accent-char">V</span>andanapu
+            </h1>
+            <h2 className="title">Senior Python Developer</h2>
+          </motion.div>
 
-            <div className="contact-info">
-              <div className="contact-item">
-                <FaMapMarkerAlt className="contact-icon" />
-                <span>2115 Lennox Dale Ln, Brandon, FL 33510</span>
+          <div className="contact-info">
+            <div className="contact-item">
+              <FaMapMarkerAlt className="contact-icon" />
+              <span>Brandon, FL 33510</span>
+            </div>
+            {/* Removed phone for privacy/cleanliness, or updated to be simpler */}
+            <div className="contact-item">
+              <FaEnvelope className="contact-icon" />
+              <a href="mailto:kasivisu3109@gmail.com">kasivisu3109@gmail.com</a>
+            </div>
+             <div className="social-links">
+              <div className="social-row">
+                <a href="https://github.com/kasivisu4" target="_blank" rel="noopener noreferrer" className="social-link">
+                  <FaGithub /> GitHub
+                </a>
+                <a href="https://www.linkedin.com/in/kasivisu4/" target="_blank" rel="noopener noreferrer" className="social-link">
+                  <FaLinkedin /> LinkedIn
+                </a>
               </div>
-              <div className="contact-item">
-                <FaPhone className="contact-icon" />
-                <span>+1 (682) 247-7728</span>
-              </div>
-              <div className="contact-item">
-                <FaEnvelope className="contact-icon" />
-                <a href="mailto:kasivisu3109@gmail.com">
-                  kasivisu3109@gmail.com
+              <div className="social-row">
+                <a href="https://observablehq.com/@kasivisu4?page=1&sort=stars&direction=desc" target="_blank" rel="noopener noreferrer" className="social-link">
+                  <FaChartLine /> Observable
                 </a>
               </div>
             </div>
+          </div>
+          
+          {/* Resume Button */}
+          <div className="resume-section" style={{ marginTop: '0.5rem', textAlign: 'left' }}>
+             <a href={resumePdf} target="_blank" rel="noopener noreferrer" className="resume-button" style={{
+                 display: 'inline-flex',
+                 alignItems: 'center',
+                 gap: '0.5rem',
+                 padding: '0.75rem 1.25rem',
+                 backgroundColor: '#1E40AF',
+                 color: 'white',
+                 borderRadius: '8px',
+                 textDecoration: 'none',
+                 fontWeight: '500',
+                 boxShadow: '0 4px 6px rgba(30, 64, 175, 0.2)',
+                 transition: 'all 0.2s ease'
+             }}>
+                 <FaFileDownload /> Download Resume
+             </a>
+          </div>
 
-            <div className="social-links">
-              <motion.a
-                href="https://github.com/kasivisu4"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="social-link"
-                whileHover={{ scale: 1.1, y: -2 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <FaGithub />
-                <span>GitHub</span>
-              </motion.a>
-              <motion.a
-                href="https://www.linkedin.com/in/kasivisu4/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="social-link"
-                whileHover={{ scale: 1.1, y: -2 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <FaLinkedin />
-                <span>LinkedIn</span>
-              </motion.a>
-            </div>
-          </motion.div>
-
-          <motion.div
-            className="quick-stats"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-          >
-            <div className="stat-item">
-              <h3>5</h3>
-              <p>Years Experience</p>
-            </div>
-            <div className="stat-item">
-              <h3>10+</h3>
-              <p>Projects Completed</p>
-            </div>
-            <div className="stat-item">
-              <h3>1</h3>
-              <p>Research Papers</p>
-            </div>
-            <div className="stat-item">
-              <h3>5+</h3>
-              <p>Technologies</p>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* About Section */}
-      <section id="about" className="section">
-        <div className="section-container">
-          <motion.h2
-            className="section-title"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-          >
-            About Me
-          </motion.h2>
-
-          <div className="about-content">
-            <motion.div
-              className="about-text"
-              initial={{ opacity: 0, x: -50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              viewport={{ once: true }}
-            >
-              <p>
-                I am a passionate Data Engineer and AI researcher with over 4
-                years of experience in building scalable data solutions and
-                machine learning applications. My journey in technology began at
-                Amrita School of Engineering, where I earned my Bachelor's in
-                Computer Science, followed by a Master's degree from
-                Northeastern University.
-              </p>
-              <p>
-                Currently working as a Python Developer at Virtusa (consulting
-                for Citi Bank), I specialize in designing microservices with
-                REST APIs using FastAPI, implementing real-time ML workflows,
-                and optimizing data processing pipelines. My work has led to
-                significant performance improvements, including 60% reduction in
-                execution time and 30% improvement in Spark job runtime.
-              </p>
-            </motion.div>
-
-            <motion.div
-              className="expertise-areas"
-              initial={{ opacity: 0, x: 50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.4 }}
-              viewport={{ once: true }}
-            >
-              <h3>Areas of Expertise</h3>
-              <div className="expertise-grid">
-                <div className="expertise-item">
-                  <FaLaptopCode className="expertise-icon" />
-                  <span>Data Engineering</span>
-                </div>
-                <div className="expertise-item">
-                  <FaBrain className="expertise-icon" />
-                  <span>Machine Learning</span>
-                </div>
-                <div className="expertise-item">
-                  <FaChartLine className="expertise-icon" />
-                  <span>Data Visualization</span>
-                </div>
-                <div className="expertise-item">
-                  <FaGraduationCap className="expertise-icon" />
-                  <span>Research</span>
-                </div>
-              </div>
-            </motion.div>
+          <div className="sidebar-summary">
+            <p>
+              Senior Python Developer & Data Engineer with 5+ years of experience building scalable, cloud-native data platforms and AI-driven applications. Expert in Python, FastAPI, Apache Spark, and real-time ML workflows.
+            </p>
           </div>
         </div>
-      </section>
+      </aside>
 
-      {/* Experience Section */}
-      <section id="experience" className="section">
-        <div className="section-container">
-          <motion.h2
-            className="section-title"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-          >
-            Experience
-          </motion.h2>
-
+      {/* Main Content Section */}
+      <main className="home-content">
+        
+        {/* Experience Section */}
+        <section id="experience" className="section">
+          <h2 className="section-title">
+            <div className="title-text">
+              <span className="section-title-accent">E</span>mployment
+            </div>
+          </h2>
           <div className="experience-timeline">
             {experiences.map((exp, index) => (
               <motion.div
                 key={exp.id}
                 className="experience-item"
-                initial={{ opacity: 0, y: 50 }}
+                initial={{ opacity: 0, y: 10 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.2 }}
                 viewport={{ once: true }}
+                transition={{ duration: 0.3, delay: index * 0.1 }}
               >
                 <div className="experience-header">
                   <h3>{exp.title}</h3>
-                  <div className="experience-meta">
-                    <span className="company">{exp.company}</span>
-                    <span className="period">
-                      <FaCalendarAlt className="meta-icon" />
-                      {exp.period}
-                    </span>
-                    <span className="location">{exp.location}</span>
-                  </div>
+                  <span className="company">{exp.company}</span>
+                </div>
+                <div className="experience-meta">
+                  <span className="period"><FaCalendarAlt /> {exp.period}</span>
+                  <span className="location">{exp.location}</span>
                 </div>
                 <ul className="achievements">
                   {exp.achievements.map((achievement, idx) => (
@@ -315,42 +239,41 @@ const Home = () => {
               </motion.div>
             ))}
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Projects Section */}
-      <section id="projects" className="section">
-        <div className="section-container">
-          <motion.h2
-            className="section-title"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-          >
-            Projects
-          </motion.h2>
-
+        {/* Projects Section */}
+        <section id="projects" className="section">
+          <h2 className="section-title">
+             <div className="title-text">
+               <span className="section-title-accent">P</span>rojects
+             </div>
+          </h2>
           <div className="projects-grid">
             {projects.map((project, index) => (
               <motion.div
                 key={project.id}
                 className="project-card"
-                initial={{ opacity: 0, y: 50 }}
+                initial={{ opacity: 0, y: 10 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.2 }}
                 viewport={{ once: true }}
-                whileHover={{ y: -10 }}
+                transition={{ duration: 0.3, delay: index * 0.1 }}
               >
                 <div className="project-header">
-                  <h3>{project.title}</h3>
+                  <h3>
+                    {project.link ? (
+                      <a href={project.link} target="_blank" rel="noopener noreferrer">
+                        {project.title}
+                      </a>
+                    ) : (
+                      project.title
+                    )}
+                  </h3>
                   <span className="project-subtitle">{project.subtitle}</span>
                 </div>
                 <p className="project-description">{project.description}</p>
                 <div className="project-technologies">
                   {project.technologies.map((tech, idx) => (
                     <span key={idx} className="tech-tag">
-                      <FaTag className="tag-icon" />
                       {tech}
                     </span>
                   ))}
@@ -358,45 +281,138 @@ const Home = () => {
               </motion.div>
             ))}
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Skills Section */}
-      <section id="skills" className="section">
-        <div className="section-container">
-          <motion.h2
-            className="section-title"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-          >
-            Skills & Technologies
-          </motion.h2>
+        {/* Visualizations Section */}
+        <section id="visualizations" className="section">
+           <h2 className="section-title">
+            <div className="title-text">
+              <span className="section-title-accent">D</span>ata Visualizations
+            </div>
+          </h2>
+          <div className="projects-grid">
+            <div className="project-card viz-card">
+               <div className="viz-preview">
+                 <img src={require('../viz_tableau_profile.png')} alt="Tableau Profile" />
+                 <div className="viz-overlay">
+                   <a href="https://public.tableau.com/app/profile/kasi.viswanath.vandanapu/vizzes" target="_blank" rel="noopener noreferrer" className="viz-link-btn">
+                     <SiTableau /> View Portfolio
+                   </a>
+                 </div>
+               </div>
+               <div className="viz-info">
+                 <h3>Tableau Profile</h3>
+                 <p>Interactive dashboard collection on Tableau Public.</p>
+               </div>
+            </div>
 
+            <div className="project-card viz-card">
+               <div className="viz-preview">
+                 <img src={require('../viz_utilization.png')} alt="Utilization Dashboard" />
+                 <div className="viz-overlay">
+                    <a href="https://public.tableau.com/app/profile/kasi.viswanath.vandanapu/viz/UtilizationMetrics/Dashboard1" target="_blank" rel="noopener noreferrer" className="viz-link-btn">
+                     <SiTableau /> View Dashboard
+                   </a>
+                 </div>
+               </div>
+               <div className="viz-info">
+                 <h3>Utilization Metrics</h3>
+                 <p>Advanced utilization tracking dashboard.</p>
+               </div>
+            </div>
+
+            <div className="project-card viz-card">
+               <div className="viz-preview">
+                 <img src={require('../viz_observable.png')} alt="Observable Collection" />
+                 <div className="viz-overlay">
+                    <a href="https://observablehq.com/collection/@kasivisu4/dataviz" target="_blank" rel="noopener noreferrer" className="viz-link-btn">
+                     <SiObservable /> View Collection
+                   </a>
+                 </div>
+               </div>
+               <div className="viz-info">
+                 <h3>Observable HQ</h3>
+                 <p>D3.js & Data Viz experiments.</p>
+               </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Skills Section */}
+        <section id="skills" className="section">
+          <h2 className="section-title">
+            <div className="title-text">
+              <span className="section-title-accent">S</span>kills
+            </div>
+          </h2>
           <div className="skills-grid">
             {Object.entries(skills).map(([category, skillList], index) => (
-              <motion.div
-                key={category}
-                className="skill-category"
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                viewport={{ once: true }}
-              >
+              <div key={category} className="skill-category">
                 <h3>{category}</h3>
                 <div className="skill-tags">
                   {skillList.map((skill, idx) => (
-                    <span key={idx} className="skill-tag">
-                      {skill}
-                    </span>
+                    <span key={idx} className="skill-tag">{skill}</span>
                   ))}
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
-        </div>
-      </section>
+        </section>
+
+        {/* Coding Activity Section */}
+        <CodingActivity />
+        
+        {/* Education Section */}
+        <section id="education" className="section">
+            <h2 className="section-title">
+                <div className="title-text">
+                  <span className="section-title-accent">E</span>ducation
+                </div>
+            </h2>
+          <div className="education-grid">
+            {education.map((edu, index) => (
+              <div key={edu.id} className="education-item">
+                <div className="edu-icon">
+                    <FaGraduationCap />
+                </div>
+                <div className="education-content">
+                    <h3>{edu.school}</h3>
+                    <p className="degree">{edu.degree}</p>
+                    <span className="edu-period">{edu.period}</span>
+                    {edu.details.length > 0 && (
+                    <ul className="edu-details">
+                        {edu.details.map((detail, idx) => (
+                        <li key={idx}>{detail}</li>
+                        ))}
+                    </ul>
+                    )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Publications Section */}
+        <section id="publications" className="section">
+            <h2 className="section-title">
+                <div className="title-text">
+                  <span className="section-title-accent">P</span>ublication
+                </div>
+            </h2>
+          <div className="publications-list">
+            {publications.map((pub, index) => (
+              <div key={pub.id} className="publication-item">
+                <FaBook className="pub-icon" />
+                <div className="pub-content">
+                  <h3>{pub.title}</h3>
+                  <p className="pub-conference">{pub.conference}</p>
+                  <p className="pub-role">{pub.role}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      </main>
     </div>
   );
 };
