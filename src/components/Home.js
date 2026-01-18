@@ -24,6 +24,7 @@ import "./Home.css";
 import resumePdf from "../kasi_resume_v10.pdf";
 
 import CodingActivity from './CodingActivity';
+import FunActivity from './FunActivity';
 
 const Home = () => {
   // Data Definition
@@ -361,6 +362,9 @@ const Home = () => {
 
         {/* Coding Activity Section */}
         <CodingActivity />
+        
+        {/* Fun Activity Section */}
+        <FunActivity />
         
         {/* Education Section */}
         <section id="education" className="section">
