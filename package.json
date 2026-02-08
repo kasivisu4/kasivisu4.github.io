@@ -1,44 +1,49 @@
 {
-  "title": "Resume",
-  "name": "startbootstrap-resume",
-  "version": "4.0.0-beta.2",
-  "description": "Resume is a simple, yet elegant resume and CV theme for Bootstrap 4.",
-  "keywords": [
-    "css",
-    "sass",
-    "html",
-    "responsive",
-    "theme",
-    "template"
-  ],
-  "homepage": "https://startbootstrap.com/template-overviews/resume",
-  "bugs": {
-    "url": "https://github.com/BlackrockDigital/startbootstrap-resume/issues",
-    "email": "feedback@startbootstrap.com"
-  },
-  "license": "MIT",
-  "author": "Start Bootstrap",
-  "contributors": [
-    "David Miller (http://davidmiller.io/)"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/BlackrockDigital/startbootstrap-resume.git"
-  },
+  "name": "portfolio",
+  "version": "3.0",
   "dependencies": {
-    "bootstrap": "^4.0.0-beta.2",
-    "devicons": "^1.8.0",
-    "jquery": "^3.2.1",
-    "popper.js": "^1.12.6",
-    "simple-line-icons": "^2.4.1"
+    "@testing-library/jest-dom": "^5.16.5",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/user-event": "^13.5.0",
+    "bootstrap": "^5.2.3",
+    "framer-motion": "^10.12.0",
+    "react": "^18.2.0",
+    "react-activity-calendar": "^3.0.5",
+    "react-dom": "^18.2.0",
+    "react-icons": "^4.8.0",
+    "react-router-dom": "^6.8.0",
+    "react-scripts": "5.0.1",
+    "react-tooltip": "^5.30.0",
+    "web-vitals": "^2.1.4"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   },
   "devDependencies": {
-    "browser-sync": "2.18.13",
-    "gulp": "^3.9.1",
-    "gulp-clean-css": "3.9.0",
-    "gulp-header": "1.8.9",
-    "gulp-rename": "^1.2.2",
-    "gulp-sass": "^3.1.0",
-    "gulp-uglify": "3.0.0"
-  }
+    "gh-pages": "^5.0.0"
+  },
+  "homepage": "https://kasivisu4.github.io/"
 }

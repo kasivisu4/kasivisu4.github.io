@@ -1,0 +1,36 @@
+
+.fun-activity-section {
+  margin-bottom: 3rem;
+}
+
+.fun-activity-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  padding: 1.5rem;
+  transition: border-color 0.2s ease;
+  overflow: hidden;
+}
+
+.fun-activity-card:hover {
+  border-color: #d1d5db;
+}
+
+.fun-activity-description {
+  margin-bottom: 1.5rem;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.fun-activity-iframe-wrapper {
+  width: 100%;
+  overflow: hidden;
+  border-radius: 4px;
+}
+
+@media (max-width: 768px) {
+  .fun-activity-section {
+    display: none;
+  }
+}
