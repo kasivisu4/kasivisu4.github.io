@@ -19,7 +19,7 @@
     "build": "next build",
     "start": "next start",
     "predeploy": "next build",
-    "deploy": "gh-pages -d out"
+    "deploy": "gh-pages -d out --dotfiles"
   },
   "devDependencies": {
     "tailwindcss": "^3.4.17",

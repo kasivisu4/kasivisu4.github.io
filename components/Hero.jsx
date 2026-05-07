@@ -8,7 +8,7 @@ import { personalInfo, coreProfiles } from '@/lib/data';
 const WORDS = ['Agentic AI', 'FastAPI', 'LangGraph', 'LLM Systems', 'Data Platforms'];
 
 // SVG progress ring for a core skill
-function SkillRing({ name, pct, size = 80, stroke = 5, delay = 0 }) {
+function SkillRing({ name, pct, size = 92, stroke = 6, delay = 0 }) {
   const r = (size - stroke * 2) / 2;
   const circ = 2 * Math.PI * r;
   const dash = (pct / 100) * circ;
@@ -45,7 +45,7 @@ function SkillRing({ name, pct, size = 80, stroke = 5, delay = 0 }) {
           <span className="text-xs font-bold text-slate-700 dark:text-slate-200">{pct}%</span>
         </div>
       </div>
-      <span className="text-[10px] font-medium text-slate-500 dark:text-slate-400 text-center leading-tight max-w-[80px]">
+      <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400 text-center leading-tight max-w-[96px]">
         {name}
       </span>
     </motion.div>
@@ -235,12 +235,12 @@ export default function Hero() {
           transition={{ duration: 0.8, delay: 0.3, ease: 'easeOut' }}
           className="hidden lg:flex flex-col items-center"
         >
-          <div className="glass-card p-8 space-y-6 glow-cyan">
+            <div className="glass-card p-9 space-y-7 glow-cyan min-w-[400px]">
             <div className="text-center">
               <p className="section-label mb-1">Core Proficiency</p>
-              <p className="text-xs text-slate-500 dark:text-slate-500">Self-assessed expertise levels</p>
+                <p className="text-sm text-slate-500 dark:text-slate-500">Self-assessed expertise levels</p>
             </div>
-            <div className="grid grid-cols-3 gap-6 justify-items-center">
+              <div className="grid grid-cols-3 gap-7 justify-items-center">
               {coreProfiles.map((skill, i) => (
                 <SkillRing key={skill.name} name={skill.name} pct={skill.pct} delay={0.5 + i * 0.12} />
               ))}
