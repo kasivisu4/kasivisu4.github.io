@@ -1,0 +1,2173 @@
+<title>Down to the Record</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+/* ── tokens ───────────────────────────────────────────────────────── */
+:root{
+  --paper:#E8ECEC; --surface:#FBFCFC; --surface-2:#F0F4F4; --surface-3:#E3EAEA;
+  --ink:#12181A; --ink-2:#4C5B5F; --ink-3:#78888B;
+  --line:#D0D9DA; --line-2:#B7C4C6;
+  --accent:#0E5C6B; --accent-2:#13808F; --accent-ink:#FFFFFF; --accent-wash:#DDEBED;
+  --signal:#A44E17; --signal-wash:#F4E6DA;
+  --good:#3C6C33; --crit:#9A342F;
+  --d0:#CFE0E3; --d1:#9DC0C6; --d2:#5E98A2; --d3:#2E7180; --d4:#12495A;
+  --shadow:0 1px 1px rgba(18,24,26,.05), 0 10px 26px -16px rgba(18,24,26,.30);
+  --radius:3px;
+  --display:'Archivo','Helvetica Neue',Arial,sans-serif;
+  --body:'IBM Plex Sans','Segoe UI',system-ui,sans-serif;
+  --mono:'IBM Plex Mono','SF Mono',Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0C1113; --surface:#141B1D; --surface-2:#1A2427; --surface-3:#233034;
+    --ink:#E3EBEC; --ink-2:#9FB1B4; --ink-3:#78898C;
+    --line:#263336; --line-2:#34474C;
+    --accent:#4FBACD; --accent-2:#7FD3E1; --accent-ink:#062229; --accent-wash:#14323A;
+    --signal:#E28C4E; --signal-wash:#33231590;
+    --good:#7FBE6E; --crit:#E27B73;
+    --d0:#1C2E33; --d1:#28464E; --d2:#3B6B76; --d3:#5A99A5; --d4:#93CBD6;
+    --shadow:0 1px 1px rgba(0,0,0,.5), 0 10px 26px -16px rgba(0,0,0,.9);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0C1113; --surface:#141B1D; --surface-2:#1A2427; --surface-3:#233034;
+  --ink:#E3EBEC; --ink-2:#9FB1B4; --ink-3:#78898C;
+  --line:#263336; --line-2:#34474C;
+  --accent:#4FBACD; --accent-2:#7FD3E1; --accent-ink:#062229; --accent-wash:#14323A;
+  --signal:#E28C4E; --signal-wash:#33231590;
+  --good:#7FBE6E; --crit:#E27B73;
+  --d0:#1C2E33; --d1:#28464E; --d2:#3B6B76; --d3:#5A99A5; --d4:#93CBD6;
+  --shadow:0 1px 1px rgba(0,0,0,.5), 0 10px 26px -16px rgba(0,0,0,.9);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--paper); color:var(--ink);
+  font-family:var(--body); font-size:16px; line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+@media (prefers-reduced-motion: reduce){ *{transition:none!important; animation:none!important} }
+
+/* ── shell ────────────────────────────────────────────────────────── */
+.wrap{max-width:1120px; margin:0 auto; padding:0 24px}
+.topbar{
+  position:sticky; top:0; z-index:40; background:color-mix(in oklab, var(--paper) 88%, transparent);
+  backdrop-filter:blur(10px); border-bottom:1px solid var(--line);
+}
+.topbar .wrap{display:flex; align-items:center; gap:20px; height:52px}
+.brand{font-family:var(--display); font-weight:700; font-size:14px; letter-spacing:.06em; text-transform:uppercase; white-space:nowrap}
+.brand span{color:var(--accent)}
+.topnav{display:flex; gap:2px; margin-left:auto; overflow-x:auto; scrollbar-width:none}
+.topnav::-webkit-scrollbar{display:none}
+.topnav a{
+  font-family:var(--mono); font-size:11.5px; letter-spacing:.03em; color:var(--ink-2);
+  text-decoration:none; padding:5px 9px; border-radius:var(--radius); white-space:nowrap;
+}
+.topnav a:hover{color:var(--ink); background:var(--surface-2)}
+a:focus-visible,button:focus-visible,select:focus-visible,input:focus-visible,summary:focus-visible{
+  outline:2px solid var(--accent-2); outline-offset:2px; border-radius:2px;
+}
+
+/* ── type ─────────────────────────────────────────────────────────── */
+h1,h2,h3,h4{font-family:var(--display); text-wrap:balance; margin:0; line-height:1.12; letter-spacing:-.015em}
+h1{font-size:clamp(38px,6.4vw,68px); font-weight:700; letter-spacing:-.035em}
+h2{font-size:clamp(24px,3.2vw,34px); font-weight:700; letter-spacing:-.025em}
+h3{font-size:19px; font-weight:600}
+h4{font-size:14.5px; font-weight:600}
+p{margin:0}
+.lede{font-size:19px; line-height:1.55; color:var(--ink-2); max-width:64ch}
+.prose{max-width:68ch; color:var(--ink-2)}
+.eyebrow{
+  font-family:var(--mono); font-size:11px; font-weight:500; letter-spacing:.14em;
+  text-transform:uppercase; color:var(--accent);
+}
+.muted{color:var(--ink-3)}
+code,.mono{font-family:var(--mono); font-variant-ligatures:none}
+
+/* ── hero ─────────────────────────────────────────────────────────── */
+.hero{padding:64px 0 44px; border-bottom:1px solid var(--line)}
+.hero .eyebrow{display:block; margin-bottom:18px}
+.hero h1{margin-bottom:22px; max-width:15ch}
+.hero .lede + .lede{margin-top:14px}
+.strip{
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(148px,1fr)); gap:1px;
+  margin-top:40px; background:var(--line); border:1px solid var(--line);
+}
+.strip div{background:var(--surface); padding:14px 16px}
+.strip dt{font-family:var(--mono); font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-3)}
+.strip dd{margin:5px 0 0; font-family:var(--display); font-size:25px; font-weight:600; font-variant-numeric:tabular-nums}
+.strip small{display:block; font-size:12px; color:var(--ink-3); margin-top:2px; font-family:var(--body)}
+
+/* ── sections ─────────────────────────────────────────────────────── */
+section{padding:64px 0; border-bottom:1px solid var(--line)}
+.sechead{margin-bottom:32px}
+.sechead .eyebrow{display:block; margin-bottom:10px}
+.sechead p{margin-top:14px}
+
+/* ── figures ──────────────────────────────────────────────────────── */
+figure{margin:0}
+.figbox{background:var(--surface); border:1px solid var(--line); padding:22px; overflow-x:auto}
+.figbox svg{display:block; max-width:100%; height:auto; min-width:660px; color:var(--ink)}
+figcaption{margin-top:12px; font-size:13.5px; color:var(--ink-3); max-width:72ch}
+.svg-box{fill:var(--surface-2); stroke:var(--line-2)}
+.svg-box-2{fill:var(--surface); stroke:var(--line-2)}
+.svg-hi{fill:var(--accent-wash); stroke:var(--accent)}
+.svg-t{fill:var(--ink); font-family:var(--body); font-size:12.5px}
+.svg-tb{fill:var(--ink); font-family:var(--display); font-size:13px; font-weight:600}
+.svg-m{fill:var(--ink-3); font-family:var(--mono); font-size:10.5px}
+.svg-a{fill:var(--ink-2); font-family:var(--mono); font-size:10.5px}
+.svg-acc{fill:var(--accent); font-family:var(--mono); font-size:10.5px; font-weight:500}
+.svg-ln{stroke:var(--ink-2); fill:none; stroke-width:1.4}
+.svg-ln-acc{stroke:var(--accent); fill:none; stroke-width:1.8}
+.svg-dash{stroke:var(--signal); fill:none; stroke-width:1.3; stroke-dasharray:5 4}
+
+/* ── demo cards ───────────────────────────────────────────────────── */
+.family{margin:0 0 20px; padding-top:8px}
+.family h3{display:flex; align-items:baseline; gap:12px}
+.family .fam-tag{font-family:var(--mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--accent)}
+.family p{margin-top:8px; font-size:14.5px; color:var(--ink-3); max-width:70ch}
+.grid{display:grid; gap:22px; margin-bottom:44px}
+.card{
+  background:var(--surface); border:1px solid var(--line); box-shadow:var(--shadow);
+  display:flex; flex-direction:column;
+}
+.card > header{padding:18px 20px 14px; border-bottom:1px solid var(--line)}
+.card .kicker{display:flex; align-items:center; gap:10px; margin-bottom:9px; flex-wrap:wrap}
+.card .num{
+  font-family:var(--mono); font-size:11px; font-weight:600; color:var(--accent-ink);
+  background:var(--accent); padding:2px 6px; border-radius:2px; letter-spacing:.04em;
+}
+.card h4{margin-bottom:6px}
+.card .def{font-size:14px; color:var(--ink-2); max-width:70ch}
+.demo{padding:20px; display:flex; flex-direction:column; gap:14px; flex:1}
+.card > footer{
+  padding:12px 20px; border-top:1px solid var(--line); background:var(--surface-2);
+  font-size:13px; color:var(--ink-2); display:flex; gap:9px; align-items:flex-start;
+}
+.card > footer b{font-family:var(--mono); font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--signal); flex:none; padding-top:3px}
+
+.chip{
+  font-family:var(--mono); font-size:10.5px; letter-spacing:.06em; text-transform:uppercase;
+  border:1px solid var(--line-2); color:var(--ink-3); padding:2px 7px; border-radius:2px; white-space:nowrap;
+}
+.chip.where{border-color:var(--accent); color:var(--accent)}
+
+/* ── controls ─────────────────────────────────────────────────────── */
+.ctl{display:flex; flex-wrap:wrap; gap:10px; align-items:center}
+.ctl label{font-family:var(--mono); font-size:10.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-3); display:flex; flex-direction:column; gap:4px}
+select, .btn{
+  font-family:var(--body); font-size:13.5px; color:var(--ink); background:var(--surface);
+  border:1px solid var(--line-2); border-radius:var(--radius); padding:6px 10px; cursor:pointer;
+}
+select{padding-right:26px}
+.btn{transition:background .12s ease, border-color .12s ease}
+.btn:hover:not(:disabled){background:var(--surface-3); border-color:var(--ink-3)}
+.btn:disabled{opacity:.4; cursor:not-allowed}
+.btn.p{background:var(--accent); border-color:var(--accent); color:var(--accent-ink)}
+.btn.p:hover{background:var(--accent-2); border-color:var(--accent-2)}
+.btn.sm{font-size:12px; padding:4px 8px}
+input[type=range]{accent-color:var(--accent); width:100%}
+
+/* breadcrumb */
+.crumbs{display:flex; flex-wrap:wrap; align-items:center; gap:6px; font-family:var(--mono); font-size:12px}
+.crumbs button{
+  background:none; border:none; color:var(--accent); cursor:pointer; padding:2px 4px;
+  font:inherit; text-decoration:underline; text-underline-offset:3px;
+}
+.crumbs .sep{color:var(--ink-3)}
+.crumbs .cur{color:var(--ink); font-weight:600}
+
+/* bars */
+.bars{display:flex; flex-direction:column; gap:5px}
+.barrow{
+  display:grid; grid-template-columns:minmax(96px,148px) 1fr auto; gap:12px; align-items:center;
+  width:100%; text-align:left; background:none; border:none; padding:4px 6px; border-radius:2px;
+  font:inherit; color:var(--ink); cursor:default;
+}
+button.barrow{cursor:pointer; transition:background .12s ease}
+button.barrow:hover{background:var(--surface-2)}
+button.barrow:hover .track i{filter:brightness(1.12)}
+.barrow .lbl{font-size:13.5px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.barrow .val{font-family:var(--mono); font-size:12.5px; font-variant-numeric:tabular-nums; color:var(--ink-2)}
+.track{height:18px; background:var(--surface-3); border-radius:1px; position:relative; overflow:hidden}
+.track i{display:block; height:100%; border-radius:1px}
+.barrow[aria-current="true"] .track i{outline:2px solid var(--accent); outline-offset:-2px}
+.barrow.dim{opacity:.38}
+
+/* tables */
+.tbl-wrap{overflow-x:auto; border:1px solid var(--line)}
+table{border-collapse:collapse; width:100%; font-size:13px}
+th,td{padding:6px 10px; text-align:left; border-bottom:1px solid var(--line); white-space:nowrap}
+thead th{
+  font-family:var(--mono); font-size:10.5px; letter-spacing:.07em; text-transform:uppercase;
+  color:var(--ink-3); background:var(--surface-2); position:sticky; top:0; font-weight:500;
+}
+tbody tr:last-child td{border-bottom:none}
+td.n, th.n{text-align:right; font-family:var(--mono); font-variant-numeric:tabular-nums}
+th.sortable{cursor:pointer; user-select:none}
+th.sortable:hover{color:var(--ink)}
+th.sortable[aria-sort]:not([aria-sort=none]){color:var(--accent)}
+.scrollbody{max-height:260px; overflow-y:auto}
+
+/* readouts */
+.readout{
+  font-family:var(--mono); font-size:12px; color:var(--ink-2); background:var(--surface-2);
+  border:1px solid var(--line); padding:9px 11px; line-height:1.65; overflow-x:auto;
+}
+.readout b{color:var(--ink); font-weight:600}
+.readout .k{color:var(--accent)}
+pre.sql{
+  font-family:var(--mono); font-size:12px; line-height:1.7; margin:0; padding:12px 13px;
+  background:var(--surface-2); border:1px solid var(--line); overflow-x:auto; color:var(--ink-2);
+}
+pre.sql b{color:var(--accent); font-weight:500}
+pre.sql i{color:var(--signal); font-style:normal}
+
+.kpis{display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:1px; background:var(--line); border:1px solid var(--line)}
+.kpi{background:var(--surface); padding:11px 13px; text-align:left; border:none; font:inherit; color:var(--ink)}
+button.kpi{cursor:pointer}
+button.kpi:hover{background:var(--surface-2)}
+.kpi dt{font-family:var(--mono); font-size:10px; letter-spacing:.09em; text-transform:uppercase; color:var(--ink-3)}
+.kpi dd{margin:4px 0 0; font-family:var(--display); font-size:21px; font-weight:600; font-variant-numeric:tabular-nums}
+.kpi[aria-pressed=true]{background:var(--accent-wash)}
+.kpi small{font-size:11px; color:var(--ink-3); font-family:var(--body)}
+
+.pills{display:flex; flex-wrap:wrap; gap:6px; align-items:center; min-height:26px}
+.pill{
+  font-family:var(--mono); font-size:11.5px; background:var(--accent-wash); color:var(--accent);
+  border:1px solid var(--accent); padding:2px 6px; border-radius:2px; display:inline-flex; gap:6px; align-items:center;
+}
+.pill button{background:none; border:none; color:inherit; cursor:pointer; font:inherit; padding:0; line-height:1}
+.pills .none{font-family:var(--mono); font-size:11.5px; color:var(--ink-3)}
+
+.miniheat td{font-family:var(--mono); font-variant-numeric:tabular-nums; text-align:right; font-size:12px}
+.miniheat th[scope=row]{font-family:var(--body); font-size:12.5px; white-space:nowrap}
+
+.spark{display:flex; align-items:flex-end; gap:2px; height:78px; padding-top:4px}
+.spark i{flex:1; min-width:1px; background:var(--d2); border-radius:1px 1px 0 0; display:block}
+.spark i.hot{background:var(--accent)}
+.timer{height:8px; background:var(--surface-3); border:1px solid var(--line); position:relative}
+.timer i{display:block; height:100%; background:var(--accent)}
+.timer i.slow{background:var(--signal)}
+
+/* 02 — cube axis strips */
+.axes{display:flex; flex-direction:column; gap:9px}
+.axis{display:grid; grid-template-columns:70px 1fr; gap:11px; align-items:start}
+.axis .an{font-family:var(--mono); font-size:10px; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-3); padding-top:5px}
+.axis .cells{display:flex; gap:3px; flex-wrap:wrap}
+.axis .cell{
+  font-family:var(--mono); font-size:11.5px; padding:3px 7px; border:1px solid var(--line-2);
+  border-radius:2px; color:var(--ink-2); background:var(--surface); white-space:nowrap;
+}
+.axis .cell.on{background:var(--accent); border-color:var(--accent); color:var(--accent-ink); font-weight:500}
+.axis .cell.off{opacity:.32}
+.retain{height:16px; background:var(--surface-3); border:1px solid var(--line); position:relative}
+.retain i{display:block; height:100%; background:var(--d3)}
+
+/* 03 — threshold strip plot */
+.stripplot{position:relative; height:72px; border:1px solid var(--line); background:var(--surface-2)}
+.stripplot .dot{
+  position:absolute; width:12px; height:12px; border-radius:50%;
+  transform:translate(-50%,-50%); border:1.5px solid var(--d3); background:var(--d3);
+}
+.stripplot .dot.fail{background:transparent; border-color:var(--line-2)}
+.stripplot .thr{position:absolute; top:0; bottom:0; width:2px; background:var(--signal)}
+.stripplot .thr b{
+  position:absolute; top:2px; left:5px; font-family:var(--mono); font-size:10px;
+  color:var(--signal); font-weight:500; white-space:nowrap;
+}
+.stripplot .axl{position:absolute; bottom:4px; font-family:var(--mono); font-size:9.5px; color:var(--ink-3)}
+.passlist{font-size:13px; color:var(--ink-2); line-height:1.65}
+.passlist b{font-family:var(--mono); font-size:10.5px; letter-spacing:.09em; text-transform:uppercase; color:var(--ink-3); display:block}
+
+/* 07 — heterogeneous linked widgets */
+.cols{display:flex; align-items:flex-end; gap:3px; height:74px}
+.cols button{
+  flex:1; min-width:0; padding:0; border:none; border-radius:1px 1px 0 0;
+  background:var(--d2); cursor:pointer; transition:background .12s ease;
+}
+.cols button:hover{background:var(--accent-2)}
+.cols button[aria-pressed="true"]{background:var(--accent)}
+.cols button.off{background:var(--d1)}
+.collabs{display:flex; gap:3px; margin-top:4px}
+.collabs span{flex:1; min-width:0; text-align:center; font-family:var(--mono); font-size:9px; color:var(--ink-3); overflow:hidden}
+.chips{display:flex; gap:6px; flex-wrap:wrap}
+.chips button{
+  font-family:var(--mono); font-size:12px; padding:4px 10px; border:1px solid var(--line-2);
+  background:var(--surface); border-radius:2px; cursor:pointer; color:var(--ink-2);
+}
+.chips button:hover{border-color:var(--ink-3)}
+.chips button[aria-pressed="true"]{background:var(--accent); border-color:var(--accent); color:var(--accent-ink)}
+.wlabel{font-family:var(--mono); font-size:11px; letter-spacing:.09em; text-transform:uppercase; color:var(--ink-3); margin-bottom:8px}
+
+/* 11 — scan volume comparison */
+.scan{display:flex; flex-direction:column; gap:7px}
+.scanrow{display:grid; grid-template-columns:118px 1fr 86px; gap:10px; align-items:center; font-family:var(--mono); font-size:11px}
+.scanrow .sb{height:15px; background:var(--surface-3); border:1px solid var(--line)}
+.scanrow .sb i{display:block; height:100%}
+.scanrow .sv{text-align:right; font-variant-numeric:tabular-nums; color:var(--ink-2)}
+.scanrow.cur{color:var(--ink)}
+.scanrow.cur .sv{color:var(--ink); font-weight:600}
+
+/* 13 — mapping editor */
+.txt{font-family:var(--body); font-size:13px; padding:5px 9px; border:1px solid var(--line-2); border-radius:var(--radius); background:var(--surface); color:var(--ink)}
+.grped{display:grid; grid-template-columns:repeat(auto-fill,minmax(185px,1fr)); gap:8px 16px}
+.grped label{display:flex; align-items:center; justify-content:space-between; gap:10px; font-size:13px; color:var(--ink-2)}
+
+/* workbench */
+.wb{display:grid; grid-template-columns:216px 1fr; background:var(--line); border:1px solid var(--line); gap:1px; box-shadow:var(--shadow)}
+.wb-side{background:var(--surface-2); padding:16px 14px; display:flex; flex-direction:column; gap:18px}
+.wb-main{background:var(--surface); padding:16px 18px; display:flex; flex-direction:column; gap:12px; min-width:0}
+.pilllist{display:flex; flex-wrap:wrap; gap:6px}
+.dimpill{
+  font-family:var(--mono); font-size:11.5px; padding:3px 9px; border:1px solid var(--line-2);
+  border-radius:2px; background:var(--surface); color:var(--ink-2); cursor:grab;
+}
+.dimpill:hover{border-color:var(--ink-3)}
+.dimpill[aria-pressed="true"]{background:var(--accent); border-color:var(--accent); color:var(--accent-ink)}
+.shelf{
+  display:flex; align-items:center; gap:8px; flex-wrap:wrap;
+  border:1px dashed var(--line-2); border-radius:2px; padding:6px 10px; min-height:37px;
+}
+.shelf.dropover{border-color:var(--accent); background:var(--accent-wash)}
+.shelf .sl{font-family:var(--mono); font-size:10px; letter-spacing:.09em; text-transform:uppercase; color:var(--ink-3); flex:none; width:52px}
+.shelf .hint{font-size:12px; color:var(--ink-3)}
+.shelf .curdim{
+  font-family:var(--mono); font-size:11.5px; padding:3px 9px; border-radius:2px;
+  background:var(--accent); color:var(--accent-ink);
+}
+@media (max-width:760px){ .wb{grid-template-columns:1fr} }
+
+/* 13 — verdict banner */
+.verdict{border-left:3px solid; padding:10px 13px; font-size:13.5px; line-height:1.6; background:var(--surface-2)}
+.verdict.yes{border-color:var(--good)}
+.verdict.no{border-color:var(--crit)}
+.verdict b{font-family:var(--mono); font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; display:block; margin-bottom:4px}
+.verdict.yes b{color:var(--good)}
+.verdict.no b{color:var(--crit)}
+.chip.add{border-color:var(--signal); color:var(--signal)}
+
+.oplog{
+  font-family:var(--mono); font-size:11.5px; color:var(--ink-2); max-height:110px; overflow-y:auto;
+  border:1px solid var(--line); background:var(--surface-2); padding:8px 10px; display:flex;
+  flex-direction:column-reverse; gap:3px;
+}
+.oplog span:first-child{color:var(--ink); font-weight:600}
+
+/* ── challenges ───────────────────────────────────────────────────── */
+.chal{display:grid; gap:1px; background:var(--line); border:1px solid var(--line)}
+.chal .row{
+  background:var(--surface); display:grid; grid-template-columns:132px 1fr; gap:0;
+}
+.chal .cat{
+  padding:16px 16px; border-right:1px solid var(--line); display:flex; flex-direction:column; gap:7px; align-items:flex-start;
+}
+.chal .cat span{font-family:var(--mono); font-size:10.5px; letter-spacing:.09em; text-transform:uppercase; padding:2px 7px; border:1px solid; border-radius:2px}
+.chal .cat .sev{font-family:var(--mono); font-size:10.5px; color:var(--ink-3)}
+.sev-correct{color:var(--crit); border-color:var(--crit)}
+.sev-perf{color:var(--signal); border-color:var(--signal)}
+.sev-sec{color:var(--crit); border-color:var(--crit)}
+.sev-cost{color:var(--accent); border-color:var(--accent)}
+.sev-ux{color:var(--good); border-color:var(--good)}
+.chal .body{padding:16px 18px}
+.chal .body h4{margin-bottom:7px}
+.chal .body p{font-size:14px; color:var(--ink-2); max-width:74ch}
+.chal .fix{
+  margin-top:10px; font-size:13.5px; color:var(--ink-2); border-left:2px solid var(--accent);
+  padding-left:11px;
+}
+.chal .fix b{font-family:var(--mono); font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--accent); display:block; margin-bottom:2px}
+
+/* ── phases ───────────────────────────────────────────────────────── */
+.phases{display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:18px}
+.phase{background:var(--surface); border:1px solid var(--line); padding:20px}
+.phase .p-n{font-family:var(--mono); font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--accent); display:block; margin-bottom:9px}
+.phase h4{margin-bottom:9px}
+.phase ul{margin:0; padding-left:17px; font-size:13.5px; color:var(--ink-2); display:flex; flex-direction:column; gap:5px}
+.phase .cost{margin-top:14px; padding-top:12px; border-top:1px solid var(--line); font-family:var(--mono); font-size:11.5px; color:var(--ink-3)}
+
+footer.page{padding:40px 0 60px; font-size:13px; color:var(--ink-3)}
+footer.page p{max-width:72ch}
+footer.page p + p{margin-top:9px}
+
+@media (max-width:640px){
+  .wrap{padding:0 16px}
+  .hero{padding:44px 0 34px}
+  section{padding:46px 0}
+  .chal .row{grid-template-columns:1fr}
+  .chal .cat{border-right:none; border-bottom:1px solid var(--line); flex-direction:row; align-items:center}
+  .barrow{grid-template-columns:minmax(74px,110px) 1fr auto; gap:8px}
+}
+</style>
+
+<div class="topbar">
+  <div class="wrap">
+    <div class="brand">Down to the <span>Record</span></div>
+    <nav class="topnav" aria-label="Sections">
+      <a href="#arch">architecture</a>
+      <a href="#navigate">navigate</a>
+      <a href="#constrain">constrain</a>
+      <a href="#arrange">arrange</a>
+      <a href="#fetch">fetch</a>
+      <a href="#workbench">workbench</a>
+      <a href="#challenges">challenges</a>
+      <a href="#build">build order</a>
+    </nav>
+  </div>
+</div>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="eyebrow">Working prototypes · one synthetic dataset</span>
+    <h1>Going from a number to the reason for it.</h1>
+    <p class="lede">Drill-down is the whole distance between a summary a manager can read and the individual
+      records that produced it. There are twelve well-known ways to travel it, plus a thirteenth that is
+      never on the list and is the first thing anyone asks for. Every one is a live prototype below — not
+      a screenshot.</p>
+    <p class="lede">All twelve run against the same generated fact table for <b>Meridian Outdoor Supply</b>,
+      a fictional retailer, built in your browser when this page loaded. The roll-ups are computed, not
+      typed in, so if a total looks wrong you can drill into it and find out why.</p>
+    <dl class="strip" id="strip">
+      <div><dt>Fact rows</dt><dd id="s-rows">—</dd><small>generated in-page</small></div>
+      <div><dt>Revenue, FY25</dt><dd id="s-rev">—</dd><small>sum of all leaves</small></div>
+      <div><dt>Dimensions</dt><dd>4</dd><small>geo · product · time · channel</small></div>
+      <div><dt>Deepest path</dt><dd>4</dd><small>year → qtr → month → day</small></div>
+      <div><dt>Techniques</dt><dd>13</dd><small>all interactive</small></div>
+    </dl>
+  </div>
+</header>
+
+<!-- ══ ARCHITECTURE ══════════════════════════════════════════════ -->
+<section id="arch">
+  <div class="wrap">
+    <div class="sechead">
+      <span class="eyebrow">Architecture</span>
+      <h2>What actually happens when someone clicks a bar</h2>
+      <p class="prose">A drill click is not a UI event that stays in the UI. It becomes a parameterised query
+        against a governed engine, and everything hard about drill-down lives in the three hops between
+        the two. This is the shape I'd build.</p>
+    </div>
+
+    <figure>
+      <div class="figbox">
+        <svg viewBox="0 0 900 430" role="img" aria-label="A drill click travels from the chart mark through the browser's drill state to a stateless drill API, which resolves the level, binds parameters and applies guardrails before reading a summary table or falling back to the raw fact table; results return capped with a cursor.">
+          <defs>
+            <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/>
+            </marker>
+          </defs>
+
+          <!-- trust boundary -->
+          <line class="svg-dash" x1="258" y1="26" x2="258" y2="404"/>
+          <text class="svg-a" x="264" y="20" fill="var(--signal)">trust boundary — identity re-checked on every request, including cache-warmed ones</text>
+
+          <!-- Column A : browser -->
+          <rect class="svg-box" x="20" y="52" width="200" height="252" rx="2"/>
+          <text class="svg-tb" x="34" y="76">Browser</text>
+          <text class="svg-m" x="34" y="92">holds view state only</text>
+
+          <rect class="svg-hi" x="34" y="104" width="172" height="44" rx="2"/>
+          <text class="svg-t" x="46" y="122">Chart mark</text>
+          <text class="svg-m" x="46" y="138">a real button, not a path</text>
+
+          <rect class="svg-box-2" x="34" y="158" width="172" height="52" rx="2"/>
+          <text class="svg-t" x="46" y="176">Drill state</text>
+          <text class="svg-m" x="46" y="192">path stack + filters</text>
+          <text class="svg-m" x="46" y="205">serialised into the URL</text>
+
+          <rect class="svg-box-2" x="34" y="220" width="172" height="44" rx="2"/>
+          <text class="svg-t" x="46" y="238">Result cache</text>
+          <text class="svg-m" x="46" y="254">keyed by path+filters</text>
+
+          <path class="svg-ln" d="M120 148 L120 158" marker-end="url(#ah)"/>
+          <path class="svg-ln" d="M206 242 C 232 242, 232 190, 210 186" marker-end="url(#ah)"/>
+          <text class="svg-a" x="60" y="288">hit → render, zero round trips</text>
+
+          <!-- Column B : API -->
+          <rect class="svg-box" x="296" y="52" width="212" height="252" rx="2"/>
+          <text class="svg-tb" x="310" y="76">Drill API</text>
+          <text class="svg-m" x="310" y="92">stateless · one endpoint</text>
+
+          <rect class="svg-box-2" x="310" y="104" width="184" height="44" rx="2"/>
+          <text class="svg-t" x="322" y="122">Level resolver</text>
+          <text class="svg-m" x="322" y="138">path → SQL template</text>
+
+          <rect class="svg-box-2" x="310" y="158" width="184" height="52" rx="2"/>
+          <text class="svg-t" x="322" y="176">Parameter binder</text>
+          <text class="svg-m" x="322" y="192">typed coercion, allowlist,</text>
+          <text class="svg-m" x="322" y="205">literal escaping</text>
+
+          <rect class="svg-box-2" x="310" y="220" width="184" height="44" rx="2"/>
+          <text class="svg-t" x="322" y="238">Guardrails</text>
+          <text class="svg-m" x="322" y="254">row cap · timeout · budget</text>
+
+          <path class="svg-ln" d="M402 148 L402 158" marker-end="url(#ah)"/>
+          <path class="svg-ln" d="M402 210 L402 220" marker-end="url(#ah)"/>
+
+          <!-- A -> B -->
+          <path class="svg-ln-acc" d="M220 126 L294 126" marker-end="url(#ah)"/>
+          <text class="svg-acc" x="222" y="116">{dim, level, value}</text>
+
+          <!-- Column C : engine -->
+          <rect class="svg-box" x="584" y="52" width="296" height="252" rx="2"/>
+          <text class="svg-tb" x="598" y="76">Query engine</text>
+          <text class="svg-m" x="598" y="92">read-only session · no writes ever</text>
+
+          <rect class="svg-box-2" x="598" y="104" width="268" height="56" rx="2"/>
+          <text class="svg-t" x="610" y="122">Summary tables</text>
+          <text class="svg-m" x="610" y="138">pre-aggregated cuboids for the paths</text>
+          <text class="svg-m" x="610" y="151">people actually click</text>
+
+          <rect class="svg-box-2" x="598" y="170" width="268" height="56" rx="2"/>
+          <text class="svg-t" x="610" y="188">Fact table</text>
+          <text class="svg-m" x="610" y="204">leaf grain — the only place a</text>
+          <text class="svg-m" x="610" y="217">drill-through can land</text>
+
+          <rect class="svg-box-2" x="598" y="236" width="268" height="46" rx="2"/>
+          <text class="svg-t" x="610" y="254">Row-level policy</text>
+          <text class="svg-m" x="610" y="270">applied here, below both — not in the API</text>
+
+          <!-- B -> C -->
+          <path class="svg-ln-acc" d="M508 128 L582 128" marker-end="url(#ah)"/>
+          <text class="svg-acc" x="512" y="118">try summary</text>
+          <path class="svg-ln" d="M508 194 L582 194" marker-end="url(#ah)"/>
+          <text class="svg-a" x="512" y="184">miss → raw scan</text>
+
+          <path class="svg-ln" d="M732 160 L732 170" marker-end="url(#ah)"/>
+          <path class="svg-ln" d="M732 226 L732 236" marker-end="url(#ah)"/>
+
+          <!-- return path -->
+          <path class="svg-ln-acc" d="M760 304 L760 348 L120 348 L120 306" marker-end="url(#ah)"/>
+          <text class="svg-acc" x="330" y="340">≤ 500 rows + next cursor + true row count</text>
+
+          <!-- footnote row -->
+          <text class="svg-m" x="20" y="384">The agent — if there is one — writes the SQL template once, at design time.</text>
+          <text class="svg-m" x="20" y="400">Opening a saved dashboard and drilling inside it never invoke a model.</text>
+        </svg>
+      </div>
+      <figcaption>The click carries three values and nothing else. Everything that decides what those values
+        are allowed to do sits to the right of the dashed line, where the user cannot reach it.</figcaption>
+    </figure>
+
+    <figure style="margin-top:34px">
+      <div class="figbox">
+        <svg viewBox="0 0 900 300" role="img" aria-label="Two architectures compared: preloading the whole cube into the browser gives instant drilling but is bounded by payload size, while querying per level scales to any dataset at the cost of a round trip per level.">
+          <text class="svg-tb" x="20" y="26">Two ways to build it — and the one edge that differs</text>
+
+          <!-- Option 1 -->
+          <rect class="svg-box" x="20" y="46" width="400" height="196" rx="2"/>
+          <text class="svg-tb" x="36" y="70">A · Preload the cube</text>
+          <rect class="svg-box-2" x="36" y="84" width="130" height="40" rx="2"/>
+          <text class="svg-t" x="48" y="102">Engine</text><text class="svg-m" x="48" y="116">one query</text>
+          <rect class="svg-hi" x="252" y="84" width="150" height="40" rx="2"/>
+          <text class="svg-t" x="264" y="102">Browser</text><text class="svg-m" x="264" y="116">holds every leaf row</text>
+          <path class="svg-ln" d="M168 104 L248 104" marker-end="url(#ah)"/>
+          <text class="svg-a" x="172" y="96">once, on load</text>
+          <rect class="svg-box-2" x="252" y="152" width="150" height="40" rx="2"/>
+          <text class="svg-t" x="264" y="170">Every drill level</text><text class="svg-m" x="264" y="184">re-group in memory</text>
+          <path class="svg-ln-acc" d="M327 128 L327 148" marker-end="url(#ah)"/>
+          <text class="svg-acc" x="334" y="143">0 ms</text>
+          <text class="svg-m" x="36" y="216">Instant, works offline, trivially cross-filters.</text>
+          <text class="svg-m" x="36" y="231">Breaks the moment the leaf set stops fitting in a payload.</text>
+
+          <!-- Option 2 -->
+          <rect class="svg-box" x="480" y="46" width="400" height="196" rx="2"/>
+          <text class="svg-tb" x="496" y="70">B · Query per level</text>
+          <rect class="svg-hi" x="496" y="84" width="130" height="40" rx="2"/>
+          <text class="svg-t" x="508" y="102">Engine</text><text class="svg-m" x="508" y="116">one query per level</text>
+          <rect class="svg-box-2" x="712" y="84" width="150" height="40" rx="2"/>
+          <text class="svg-t" x="724" y="102">Browser</text><text class="svg-m" x="724" y="116">holds one level</text>
+          <path class="svg-ln-acc" d="M628 98 L708 98" marker-end="url(#ah)"/>
+          <path class="svg-ln-acc" d="M708 114 L632 114" marker-end="url(#ah)"/>
+          <text class="svg-acc" x="636" y="140">a round trip, each level</text>
+          <rect class="svg-box-2" x="712" y="152" width="150" height="40" rx="2"/>
+          <text class="svg-t" x="724" y="170">Every drill level</text><text class="svg-m" x="724" y="184">new bind, new scan</text>
+          <path class="svg-ln" d="M787 128 L787 148" marker-end="url(#ah)"/>
+          <text class="svg-m" x="496" y="216">Unbounded data, security enforced per request.</text>
+          <text class="svg-m" x="496" y="231">Every level costs latency and money.</text>
+
+          <text class="svg-a" x="20" y="270">Crossover in practice: A holds up to roughly 50k leaf rows or ~5 MB gzipped. Above that the payload,</text>
+          <text class="svg-a" x="20" y="286">not the query, is what makes the dashboard slow — and A can never enforce row-level security.</text>
+        </svg>
+      </div>
+      <figcaption>Most real dashboards want both: preload the top two levels so the common clicks are free,
+        query the rest. The demos on this page are option A, because the whole dataset is in the tab.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ══ NAVIGATE ══════════════════════════════════════════════════ -->
+<section id="navigate">
+  <div class="wrap">
+    <div class="sechead">
+      <span class="eyebrow">Group one of four</span>
+      <h2>Navigate — move to a different place in the data</h2>
+      <p class="prose">The techniques are grouped by what they do to the query, not by how they look, because
+        that grouping is also the one that predicts where the work has to run. Navigation changes the
+        <i>grain</i>: you end up looking at a different set of rows than you started with.</p>
+    </div>
+
+    <div class="grid">
+      <!-- 1 hierarchical -->
+      <article class="card">
+        <header>
+          <div class="kicker"><span class="num">01</span><span class="chip">Navigate</span><span class="chip where">runs on the API</span></div>
+          <h4>Hierarchical drilling</h4>
+          <p class="def">Descend a declared hierarchy one level at a time. Region → Country → City. Each level
+            is a separate query with the parent's value bound in as a predicate.</p>
+        </header>
+        <div class="demo">
+          <div class="crumbs" id="h-crumbs"></div>
+          <div class="bars" id="h-bars"></div>
+          <div class="readout" id="h-read"></div>
+        </div>
+        <footer><b>Cost</b><span>The hierarchy has to be declared somewhere. Data alone cannot tell you that
+          Vancouver rolls into Canada rolls into North America — that is a modelling decision, and if it
+          drifts from the warehouse the drill silently returns nothing.</span></footer>
+      </article>
+
+      <!-- 6 drill-through -->
+      <article class="card">
+        <header>
+          <div class="kicker"><span class="num">06</span><span class="chip">Navigate</span><span class="chip where">hits the fact table</span></div>
+          <h4>Drill-through to source records</h4>
+          <p class="def">Skip the levels entirely and jump from an aggregate straight to the individual rows
+            behind it. Click a KPI, get the transactions.</p>
+        </header>
+        <div class="demo">
+          <div class="ctl">
+            <label>Region<select id="dt-region"></select></label>
+            <label>Month<select id="dt-month"></select></label>
+          </div>
+          <dl class="kpis" id="dt-kpis"></dl>
+          <div id="dt-panel" hidden>
+            <div class="readout" id="dt-head" style="margin-bottom:10px"></div>
+            <div class="tbl-wrap"><div class="scrollbody"><table id="dt-tbl"></table></div></div>
+          </div>
+        </div>
+        <footer><b>Cost</b><span>This is the only technique that returns un-aggregated rows, so it is the one
+          that leaks. A summary of orders is harmless; the orders themselves name customers. Row-level
+          policy has to hold here or nowhere.</span></footer>
+      </article>
+
+      <!-- 8 zoom / LOD -->
+      <article class="card">
+        <header>
+          <div class="kicker"><span class="num">08</span><span class="chip">Navigate</span><span class="chip where">client + API</span></div>
+          <h4>Zoom and level-of-detail</h4>
+          <p class="def">Narrow the window and let the grain follow it. A year of data is drawn by month; a
+            fortnight of the same data is drawn by day, without anyone choosing a grain.</p>
+        </header>
+        <div class="demo">
+          <div class="ctl" style="gap:6px">
+            <button class="btn sm" data-zoom="all">Full year</button>
+            <button class="btn sm" data-zoom="q3">Q3</button>
+            <button class="btn sm" data-zoom="aug">August</button>
+            <button class="btn sm" data-zoom="wk">One week</button>
+          </div>
+          <div>
+            <label class="mono" style="font-size:10.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-3)">Window start</label>
+            <input type="range" id="z-a" min="0" max="364" value="0">
+            <label class="mono" style="font-size:10.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-3)">Window end</label>
+            <input type="range" id="z-b" min="0" max="364" value="364">
+          </div>
+          <div class="spark" id="z-spark"></div>
+          <div class="readout" id="z-read"></div>
+        </div>
+        <footer><b>Cost</b><span>Automatic grain is the friendliest of the twelve and the easiest to get
+          wrong. The switch must be announced, or the same chart quietly changes what a bar means and
+          people compare a daily bar to a monthly one.</span></footer>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ══ CONSTRAIN ═════════════════════════════════════════════════ -->
+<section id="constrain">
+  <div class="wrap">
+    <div class="sechead">
+      <span class="eyebrow">Group two of four</span>
+      <h2>Constrain — keep the grain, shrink the set</h2>
+      <p class="prose">These three all end up as a <code>WHERE</code> clause. They differ in who writes it:
+        the user picks a dimension value, types a threshold, or clicks a mark in another chart and lets the
+        system infer it.</p>
+    </div>
+
+    <div class="grid">
+      <!-- 2 slice & dice -->
+      <article class="card">
+        <header>
+          <div class="kicker"><span class="num">02</span><span class="chip">Constrain</span><span class="chip where">runs on the API</span></div>
+          <h4>Slicing and dicing</h4>
+          <p class="def">A <i>slice</i> pins one dimension to one value. A <i>dice</i> pins several at once,
+            carving a sub-cube. The grain never changes — only how much of the cube you are looking at.</p>
+        </header>
+        <div class="demo">
+          <div class="ctl">
+            <label>Quarter<select id="sd-q"></select></label>
+            <label>Category<select id="sd-cat"></select></label>
+            <label>Channel<select id="sd-ch"></select></label>
+          </div>
+          <div class="axes" id="sd-axes"></div>
+          <div class="retain"><i id="sd-ret"></i></div>
+          <div class="readout" id="sd-read"></div>
+        </div>
+        <footer><b>Cost</b><span>Dicing hard enough produces cells with three rows in them, which then get
+          shown as a trend. Small-cell suppression is not optional once anyone makes a decision from the
+          result.</span></footer>
+      </article>
+
+      <!-- 3 filtering -->
+      <article class="card">
+        <header>
+          <div class="kicker"><span class="num">03</span><span class="chip">Constrain</span><span class="chip where">runs on the API</span></div>
+          <h4>Filtering by measure</h4>
+          <p class="def">Not a dimension value but a condition on the number itself: show only the cities
+            above a revenue floor. This is a <code>HAVING</code>, applied after aggregation.</p>
+        </header>
+        <div class="demo">
+          <div>
+            <label class="mono" style="font-size:10.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-3)">Minimum city revenue</label>
+            <input type="range" id="f-th" min="0" max="900000" step="10000" value="300000">
+          </div>
+          <div class="stripplot" id="f-strip"></div>
+          <div class="readout" id="f-read"></div>
+          <p class="passlist" id="f-pass"></p>
+        </div>
+        <footer><b>Cost</b><span>A measure filter changes the denominator of everything downstream. If the
+          page still shows "share of total" after filtering, decide once whether total means the filtered
+          set or the whole — and label it.</span></footer>
+      </article>
+
+      <!-- 7 cross-filter -->
+      <article class="card">
+        <header>
+          <div class="kicker"><span class="num">07</span><span class="chip">Constrain</span><span class="chip where">client-side</span></div>
+          <h4>Linked views and cross-filtering</h4>
+          <p class="def">Selecting in one chart constrains every other chart on the page. One gesture, one
+            predicate, broadcast to every widget bound to the same dataset.</p>
+        </header>
+        <div class="demo">
+          <div class="pills" id="x-pills"></div>
+          <div>
+            <div class="wlabel">Revenue by month — click a column</div>
+            <div class="cols" id="x-mon"></div>
+            <div class="collabs" id="x-monl"></div>
+          </div>
+          <div>
+            <div class="wlabel">Channel — click a chip</div>
+            <div class="chips" id="x-ch"></div>
+          </div>
+          <div>
+            <div class="wlabel">Category — click a bar</div>
+            <div class="bars" id="x-cat"></div>
+          </div>
+          <dl class="kpis" id="x-kpi"></dl>
+          <div class="readout" id="x-read"></div>
+        </div>
+        <footer><b>Cost</b><span>Every chart on the page becomes a query on every click. Three widgets is
+          three queries per selection; a fifteen-widget dashboard is a stampede. Debounce, batch into one
+          request, and cache by predicate set.</span></footer>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ══ ARRANGE ═══════════════════════════════════════════════════ -->
+<section id="arrange">
+  <div class="wrap">
+    <div class="sechead">
+      <span class="eyebrow">Group three of four</span>
+      <h2>Arrange — same rows, different shape</h2>
+      <p class="prose">Nothing here changes which records are in play. These techniques change the
+        <code>GROUP BY</code>, the <code>ORDER BY</code>, or which dimension is on which axis — and that
+        is often the entire difference between a table nobody reads and an obvious answer. This family
+        also holds the thirteenth technique, which is the one everybody asks for by name: grouping the
+        data their own way, and then expecting the drill to follow it down.</p>
+    </div>
+
+    <div class="grid">
+      <!-- 4 sort & group -->
+      <article class="card">
+        <header>
+          <div class="kicker"><span class="num">04</span><span class="chip">Arrange</span><span class="chip where">client under 10k rows</span></div>
+          <h4>Sorting and grouping</h4>
+          <p class="def">Choose the grouping key, then order by any measure. Sorting by margin rather than
+            revenue is usually where the interesting question starts.</p>
+        </header>
+        <div class="demo">
+          <div class="ctl"><label>Group by<select id="sg-dim"></select></label></div>
+          <div class="tbl-wrap"><div class="scrollbody"><table id="sg-tbl"></table></div></div>
+          <div class="readout" id="sg-read"></div>
+        </div>
+        <footer><b>Cost</b><span>Margin % is the trap. It is a ratio, so it cannot be summed or averaged up
+          the hierarchy — it has to be recomputed from stored numerator and denominator at whatever level
+          is on screen. Averaging the children gives a plausible, wrong number.</span></footer>
+      </article>
+
+      <!-- 13 logical grouping -->
+      <article class="card" id="logical">
+        <header>
+          <div class="kicker"><span class="num">13</span><span class="chip">Arrange</span><span class="chip where">runs on the API</span><span class="chip add">not on the standard list</span></div>
+          <h4>Logical grouping — and whether the drill follows it</h4>
+          <p class="def">Sets a user defines themselves, cutting across the declared hierarchy: sales blocs,
+            order-size bands, revenue quintiles. Whether you can drill into one is not a UI question — it
+            depends entirely on <i>what decides membership</i>.</p>
+        </header>
+        <div class="demo">
+          <div class="ctl">
+            <label>Grouping<select id="lg-kind"></select></label>
+            <label>Then re-run under<select id="lg-filter"></select></label>
+          </div>
+          <div id="lg-editor" hidden>
+            <div class="wlabel">Edit the mapping — your blocs become a real dimension in the workbench below</div>
+            <div class="grped" id="lg-map"></div>
+            <div class="ctl" style="margin-top:9px">
+              <input type="text" class="txt" id="lg-newgrp" placeholder="New group name" aria-label="New group name">
+              <button class="btn sm" id="lg-addgrp">Add group</button>
+            </div>
+          </div>
+          <div class="verdict" id="lg-verdict"></div>
+          <div class="crumbs" id="lg-crumbs"></div>
+          <div class="bars" id="lg-bars"></div>
+          <div class="readout" id="lg-read"></div>
+        </div>
+        <footer><b>Answer</b><span>Yes for the first two, no for the third — and the demo computes the
+          difference rather than asserting it. Change the filter and watch how many members move between
+          groups. A grouping fixed before the query behaves exactly like a declared level; a grouping
+          derived from the aggregate is redefined by every filter the drill applies.</span></footer>
+      </article>
+
+      <!-- 5 pivot -->
+      <article class="card">
+        <header>
+          <div class="kicker"><span class="num">05</span><span class="chip">Arrange</span><span class="chip where">runs on the API</span></div>
+          <h4>Pivoting and cross-tabulation</h4>
+          <p class="def">Put one dimension on rows, another on columns, a measure in the cells. Swapping the
+            axes asks a genuinely different question of the same numbers.</p>
+        </header>
+        <div class="demo">
+          <div class="ctl">
+            <label>Rows<select id="pv-r"></select></label>
+            <label>Columns<select id="pv-c"></select></label>
+            <button class="btn" id="pv-swap">⇄ Swap axes</button>
+          </div>
+          <div class="tbl-wrap"><table class="miniheat" id="pv-tbl"></table></div>
+          <div class="readout" id="pv-read"></div>
+        </div>
+        <footer><b>Cost</b><span>Column count is user-controlled and therefore unbounded. Pivot City against
+          Item and you have asked for 400 columns; the query succeeds and the page dies. Cap the column
+          dimension's cardinality before the query, not after.</span></footer>
+      </article>
+
+      <!-- 9 OLAP -->
+      <article class="card">
+        <header>
+          <div class="kicker"><span class="num">09</span><span class="chip">Arrange</span><span class="chip where">engine-side</span></div>
+          <h4>OLAP cube operations</h4>
+          <p class="def">The formal vocabulary the other techniques are informal versions of: drill-down,
+            roll-up, slice, dice, pivot, rotate. Each is a transform on a cube address, and the sequence is
+            replayable.</p>
+        </header>
+        <div class="demo">
+          <div class="ctl">
+            <label>Measure<select id="ol-measure"><option value="rev">Revenue</option><option value="units">Units</option><option value="margin">Margin %</option></select></label>
+          </div>
+          <div class="ctl" style="gap:6px">
+            <button class="btn sm" data-olap="drill">▼ Drill down</button>
+            <button class="btn sm" data-olap="roll">▲ Roll up</button>
+            <button class="btn sm" data-olap="pivot">⇄ Pivot</button>
+            <button class="btn sm" data-olap="rotate">↻ Rotate</button>
+            <button class="btn sm" data-olap="slice">◧ Slice</button>
+            <button class="btn sm" data-olap="dice">◫ Dice</button>
+            <button class="btn sm" data-olap="reset">Reset</button>
+          </div>
+          <div class="readout" id="ol-addr"></div>
+          <div class="tbl-wrap"><table class="miniheat" id="ol-tbl"></table></div>
+          <div class="oplog" id="ol-log"></div>
+        </div>
+        <footer><b>Cost</b><span>The vocabulary is the easy part. Making the six operations closed — every
+          operation valid from every state, and every state addressable — is where cube engines earn their
+          licence fee.</span></footer>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FETCH ═════════════════════════════════════════════════════ -->
+<section id="fetch">
+  <div class="wrap">
+    <div class="sechead">
+      <span class="eyebrow">Group four of four</span>
+      <h2>Fetch — how the rows actually arrive</h2>
+      <p class="prose">The last three are invisible to the user and are the reason the first nine feel fast
+        or feel broken. They are engineering decisions, not interaction ones, and they are where the budget
+        goes.</p>
+    </div>
+
+    <div class="grid">
+      <!-- 10 query retrieval -->
+      <article class="card">
+        <header>
+          <div class="kicker"><span class="num">10</span><span class="chip">Fetch</span><span class="chip where">engine-side</span></div>
+          <h4>Query-based detail retrieval</h4>
+          <p class="def">Underneath every one of the demos above is a generated statement. Building it from
+            explicit state — rather than string-concatenating whatever the user clicked — is what makes the
+            whole pattern safe.</p>
+        </header>
+        <div class="demo">
+          <div class="ctl">
+            <label>Dimension<select id="q-dim"></select></label>
+            <label>Region filter<select id="q-reg"></select></label>
+            <label>Limit<select id="q-lim"><option>5</option><option selected>10</option><option>25</option></select></label>
+          </div>
+          <pre class="sql" id="q-sql"></pre>
+          <div class="tbl-wrap"><table id="q-tbl"></table></div>
+        </div>
+        <footer><b>Cost</b><span>The bound value came from a click, which came from a page, which anyone can
+          edit. Typed coercion plus an allowlist plus a read-only session — and treat the read-only session
+          as the backstop, never as the plan.</span></footer>
+      </article>
+
+      <!-- 11 pre-agg -->
+      <article class="card">
+        <header>
+          <div class="kicker"><span class="num">11</span><span class="chip">Fetch</span><span class="chip where">engine-side</span></div>
+          <h4>Pre-aggregation and summary tables</h4>
+          <p class="def">Answer the top of the hierarchy from a table that was computed last night, and only
+            touch raw rows once someone drills past what was pre-computed.</p>
+        </header>
+        <div class="demo">
+          <div class="ctl" style="gap:6px">
+            <button class="btn p sm" data-agg="summary">Read summary table</button>
+            <button class="btn sm" data-agg="raw">Scan raw facts</button>
+          </div>
+          <div class="timer"><i id="pa-bar" style="width:0%"></i></div>
+          <div class="readout" id="pa-read"></div>
+          <div class="scan" id="pa-scan"></div>
+          <div>
+            <div class="wlabel" id="pa-cap"></div>
+            <div class="tbl-wrap"><div class="scrollbody" style="max-height:158px"><table id="pa-tbl"></table></div></div>
+          </div>
+        </div>
+        <footer><b>Cost</b><span>Timings here are modelled from the real row counts on a fixed rate, not
+          measured — the point is the ratio. The real cost is elsewhere: four three-level dimensions imply
+          256 possible summary tables, and you cannot build them all.</span></footer>
+      </article>
+
+      <!-- 12 lazy loading -->
+      <article class="card">
+        <header>
+          <div class="kicker"><span class="num">12</span><span class="chip">Fetch</span><span class="chip where">runs on the API</span></div>
+          <h4>Lazy loading and pagination</h4>
+          <p class="def">Return a page of detail rows plus a cursor, never the whole result. The response
+            stays a fixed size no matter how large the answer is.</p>
+        </header>
+        <div class="demo">
+          <div class="ctl">
+            <label>Page size<select id="lz-size"><option>10</option><option selected>25</option><option>50</option></select></label>
+            <button class="btn" id="lz-more">Load next page</button>
+            <button class="btn" id="lz-reset">Reset</button>
+          </div>
+          <div class="timer"><i id="lz-prog" style="width:0%"></i></div>
+          <div class="readout" id="lz-read"></div>
+          <div class="tbl-wrap"><div class="scrollbody"><table id="lz-tbl"></table></div></div>
+        </div>
+        <footer><b>Cost</b><span>Offset pagination drifts when the underlying data changes between pages —
+          rows repeat or vanish. Keyset cursors on a stable sort key are the fix, and they are also the
+          reason "jump to page 40" quietly stops being offered.</span></footer>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ══ WORKBENCH ═════════════════════════════════════════════════ -->
+<section id="workbench">
+  <div class="wrap">
+    <div class="sechead">
+      <span class="eyebrow">Synthesis</span>
+      <h2>The workbench — every technique on one surface</h2>
+      <p class="prose">The thirteen prototypes above each isolate one idea. Real BI tools compose them into
+        a single surface: a data panel, shelves, and a canvas. This is that surface, built on the same
+        6,400 rows — drag a dimension onto a shelf (or click it), click a bar to drill, add filters, switch
+        the measure, and watch the generated SQL track every gesture. Blocs defined in prototype 13 show
+        up here as the <b>Sales bloc</b> dimension.</p>
+    </div>
+    <div class="wb">
+      <aside class="wb-side">
+        <div>
+          <div class="wlabel">Dimensions — click for rows, or drag to a shelf</div>
+          <div class="pilllist" id="wb-dims"></div>
+        </div>
+        <div>
+          <div class="wlabel">Measure</div>
+          <div class="chips" id="wb-meas"></div>
+        </div>
+        <div>
+          <div class="wlabel">View</div>
+          <div class="chips">
+            <button type="button" id="wb-vbar" aria-pressed="true">Bars</button>
+            <button type="button" id="wb-vtbl" aria-pressed="false">Table</button>
+          </div>
+        </div>
+      </aside>
+      <div class="wb-main">
+        <div class="shelf" id="wb-rows"><span class="sl">Rows</span><span id="wb-rowpill" style="display:contents"></span></div>
+        <div class="shelf" id="wb-filters"><span class="sl">Filters</span>
+          <span id="wb-fpills" style="display:contents"></span>
+          <span style="margin-left:auto; display:flex; gap:6px; align-items:center; flex-wrap:wrap">
+            <select id="wb-fdim" aria-label="Filter dimension"></select>
+            <select id="wb-fval" aria-label="Filter value"></select>
+            <button class="btn sm" id="wb-fadd">Add</button>
+          </span>
+        </div>
+        <div class="wlabel" id="wb-title"></div>
+        <div class="crumbs" id="wb-crumbs"></div>
+        <div class="bars" id="wb-canvas"></div>
+        <div class="tbl-wrap" id="wb-twrap" hidden><div class="scrollbody"><table id="wb-table"></table></div></div>
+        <div class="readout" id="wb-note"></div>
+        <pre class="sql" id="wb-sql"></pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ CHALLENGES ════════════════════════════════════════════════ -->
+<section id="challenges">
+  <div class="wrap">
+    <div class="sechead">
+      <span class="eyebrow">The honest part</span>
+      <h2>Where this gets hard</h2>
+      <p class="prose">None of the twelve is difficult on its own. What makes drill-down an engineering
+        project rather than a feature is that correctness, latency, security and cost all degrade in
+        different directions as depth increases — and the first three of these produce wrong answers
+        rather than errors, which is worse.</p>
+    </div>
+
+    <div class="chal">
+      <div class="row"><div class="cat"><span class="sev-correct">Correctness</span><span class="sev">silent</span></div>
+        <div class="body"><h4>Ratios and distinct counts do not roll up</h4>
+          <p>A 42% margin and a 61% margin do not combine into 51.5%, and two regions with 900 unique
+            customers each do not make 1,800. Averaging children is the single most common drill-down bug
+            because it always returns a plausible number.</p>
+          <div class="fix"><b>Mitigation</b>Store and transport the numerator and denominator separately.
+            Compute every ratio at the level being displayed. Never let a ratio column be aggregated by the
+            generic roll-up path.</div></div></div>
+
+      <div class="row"><div class="cat"><span class="sev-correct">Correctness</span><span class="sev">silent</span></div>
+        <div class="body"><h4>Mixed grains in one table double-count</h4>
+          <p>When a table stores both the parent level and the child level as rows — a region total sitting
+            alongside its cities, a 2-digit product code alongside its 4-digit children — a naive
+            <code>SUM</code> counts the same money two or three times. The query succeeds; the total is
+            simply inflated.</p>
+          <div class="fix"><b>Mitigation</b>Never expose the union table to the query builder. Publish one
+            view per grain, each pre-filtered to its own level, and make those views the only thing the
+            drill resolver can name.</div></div></div>
+
+      <div class="row"><div class="cat"><span class="sev-correct">Correctness</span><span class="sev">silent</span></div>
+        <div class="body"><h4>Custom groups defined by a measure move underneath the drill</h4>
+          <p>"Top quarter of cities", "high-margin items", "at-risk accounts" — groups whose membership is
+            computed from an aggregate rather than mapped from a dimension. Drilling applies a filter, the
+            ranking is recomputed against the surviving rows, and the group silently changes who is in it.
+            The user clicked "Top quarter" and is now looking at a different top quarter. Prototype 13
+            measures the movement.</p>
+          <div class="fix"><b>Mitigation</b>Resolve membership once, at the level the user selected, and
+            carry the resulting member list down the drill as an explicit predicate. If membership must
+            stay dynamic, say so on the chart — a group that re-ranks is a filter, not a level, and it
+            cannot be pre-aggregated.</div></div></div>
+
+      <div class="row"><div class="cat"><span class="sev-perf">Performance</span><span class="sev">compounds</span></div>
+        <div class="body"><h4>Latency multiplies with depth</h4>
+          <p>Four levels is four sequential round trips, because level <i>n</i>'s predicate is not known
+            until level <i>n−1</i> is clicked. At 300 ms each that is 1.2 seconds of dead interface spread
+            across a gesture the user experiences as one action.</p>
+          <div class="fix"><b>Mitigation</b>Prefetch the children of the focused mark on hover or focus.
+            Keep the previous level on screen, dimmed, rather than swapping in a spinner — perceived latency
+            is what is actually being fixed.</div></div></div>
+
+      <div class="row"><div class="cat"><span class="sev-perf">Performance</span><span class="sev">cliff</span></div>
+        <div class="body"><h4>Cardinality bombs</h4>
+          <p>Drilling into City returns 400 rows. The identical gesture on Customer returns 2.4 million.
+            The interface offers no clue which one is about to happen, and the chart component will happily
+            attempt to render both.</p>
+          <div class="fix"><b>Mitigation</b>Store distinct counts per level in the catalogue and refuse to
+            render a level above the cap. Substitute a searchable, paginated list for the chart, and always
+            bucket the tail into "other" rather than truncating it silently.</div></div></div>
+
+      <div class="row"><div class="cat"><span class="sev-cost">Cost</span><span class="sev">grows</span></div>
+        <div class="body"><h4>Pre-aggregates explode combinatorially</h4>
+          <p>Four dimensions of three levels each imply 256 possible cuboids. Materialising all of them is a
+            nightly job that costs more than the dashboard, and materialising none of them means every top-level
+            page load scans the fact table.</p>
+          <div class="fix"><b>Mitigation</b>Materialise from observed click paths, not from the schema. Log
+            which (dimension, level, filter) combinations are actually requested, build those, and retire any
+            summary whose hit rate falls below a threshold.</div></div></div>
+
+      <div class="row"><div class="cat"><span class="sev-sec">Security</span><span class="sev">breach-class</span></div>
+        <div class="body"><h4>Authorisation has to survive the last hop</h4>
+          <p>Aggregates are usually safe to show broadly; the records underneath them are not. Drill-through
+            is the one technique that crosses that line, and a result cache shared across sessions will
+            happily serve one user's rows to another.</p>
+          <div class="fix"><b>Mitigation</b>Enforce row-level policy in the engine, below both the summary
+            and the fact table, so no API path can bypass it. Key every cache entry by principal as well as
+            by query, and re-check on every hit.</div></div></div>
+
+      <div class="row"><div class="cat"><span class="sev-sec">Security</span><span class="sev">injection</span></div>
+        <div class="body"><h4>Drill parameters are user input wearing a chart's clothes</h4>
+          <p>The value bound into the next level's predicate arrived from a click handler in a page the user
+            controls. It is exactly as trustworthy as a form field, and it is being interpolated into SQL.</p>
+          <div class="fix"><b>Mitigation</b>Coerce to the declared type, check against a character allowlist,
+            escape as a literal, and run the session read-only with a statement timeout. Four independent
+            layers, because any one of them can be wrong.</div></div></div>
+
+      <div class="row"><div class="cat"><span class="sev-ux">Usability</span><span class="sev">chronic</span></div>
+        <div class="body"><h4>Depth without a trail loses people</h4>
+          <p>Three levels down, cross-filtered twice and re-sorted, a user cannot say what they are looking
+            at, cannot get back, and cannot send it to anyone. The finding exists only in their tab.</p>
+          <div class="fix"><b>Mitigation</b>Treat drill state as an addressable resource: the path, filters,
+            grain and sort all serialise into the URL, browser Back rolls up exactly one level, and a
+            breadcrumb is on screen at every depth.</div></div></div>
+
+      <div class="row"><div class="cat"><span class="sev-ux">Usability</span><span class="sev">excludes</span></div>
+        <div class="body"><h4>Half of these idioms assume a mouse</h4>
+          <p>Hover-to-preview, click-a-tiny-mark and brush-to-zoom all fail on touch, and a chart drawn as
+            SVG paths is invisible to a screen reader and unreachable by keyboard — which quietly makes the
+            drill-down feature unavailable to part of the audience.</p>
+          <div class="fix"><b>Mitigation</b>Every drillable mark is a real focusable control with an
+            accessible name carrying its value. Tap drills, an explicit control rolls up, and the same data
+            is available as a table. Every prototype on this page follows that rule — try it with Tab.</div></div></div>
+
+      <div class="row"><div class="cat"><span class="sev-cost">Cost</span><span class="sev">unbounded</span></div>
+        <div class="body"><h4>Curiosity is billed per query</h4>
+          <p>On a consumption-priced warehouse, a cross-filtered dashboard turns one idle click into a dozen
+            scans. There is no natural ceiling, because the interface rewards exploration and the invoice
+            arrives a month later.</p>
+          <div class="fix"><b>Mitigation</b>Cache on the full predicate set, batch a page's widgets into one
+            request, and give each dashboard a query budget with a visible degradation mode rather than a
+            surprise bill.</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ BUILD ORDER ═══════════════════════════════════════════════ -->
+<section id="build">
+  <div class="wrap">
+    <div class="sechead">
+      <span class="eyebrow">What I would do next</span>
+      <h2>Build order</h2>
+      <p class="prose">These phases are sequenced by dependency, not by visible value: each one is the thing
+        that has to be true before the next is safe to attempt. Each ends with something demonstrable.</p>
+    </div>
+    <div class="phases">
+      <div class="phase">
+        <span class="p-n">Phase one · foundation</span>
+        <h4>One hierarchy, end to end</h4>
+        <ul>
+          <li>Declare hierarchies and level cardinalities in the catalogue</li>
+          <li>One drill endpoint: path in, capped rows plus cursor out</li>
+          <li>Parameter binding hardened, read-only session enforced</li>
+          <li>Drill state in the URL from day one — retrofitting it is painful</li>
+        </ul>
+        <div class="cost">Proves: geo drill, breadcrumb, shareable link</div>
+      </div>
+      <div class="phase">
+        <span class="p-n">Phase two · breadth</span>
+        <h4>The rest of the interaction surface</h4>
+        <ul>
+          <li>Cross-filtering with a single batched request per gesture</li>
+          <li>Pivot and sort against the same resolver</li>
+          <li>Drill-through, gated behind row-level policy</li>
+          <li>Ratio measures carried as numerator and denominator pairs</li>
+        </ul>
+        <div class="cost">Proves: a dashboard someone can actually explore</div>
+      </div>
+      <div class="phase">
+        <span class="p-n">Phase three · economics</span>
+        <h4>Make it affordable at depth</h4>
+        <ul>
+          <li>Log click paths; materialise only the cuboids they reach</li>
+          <li>Predicate-keyed cache, scoped per principal</li>
+          <li>Prefetch on focus; dim-and-replace instead of spinners</li>
+          <li>Per-dashboard query budget with a visible degradation mode</li>
+        </ul>
+        <div class="cost">Proves: the invoice stops scaling with curiosity</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="page">
+  <div class="wrap">
+    <p><b>About the data.</b> Meridian Outdoor Supply is invented. Its fact table is generated
+      deterministically in your browser from a fixed seed when the page loads, with seasonality built into
+      the product mix — snow sells in Q1 and Q4, paddle in Q2 and Q3 — so the prototypes have real patterns
+      to reveal rather than noise. Nothing is fetched and nothing is sent anywhere.</p>
+    <p><b>About the timings.</b> The only numbers on this page that are modelled rather than computed are
+      the latency figures in prototype 11, which apply a fixed scan rate to the true row counts. Everything
+      else — every total, every roll-up, every cell — is calculated from the generated rows at the moment
+      you interact with it.</p>
+  </div>
+</footer>
+
+<script>
+(() => {
+'use strict';
+
+/* ── deterministic RNG ─────────────────────────────────────────── */
+function mulberry(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const rnd = mulberry(20250823);
+const pick = arr => arr[Math.floor(rnd()*arr.length)];
+const wpick = (entries) => { // [[val,w],...]
+  const tot = entries.reduce((s,e)=>s+e[1],0); let r = rnd()*tot;
+  for(const [v,w] of entries){ if((r-=w)<=0) return v } return entries[entries.length-1][0];
+};
+
+/* ── dimensions ────────────────────────────────────────────────── */
+const GEO = {
+  'North America':{ 'United States':['Denver','Seattle','Austin'], 'Canada':['Vancouver','Montréal'] },
+  'Europe':{ 'United Kingdom':['London','Manchester'], 'Germany':['Munich','Berlin'], 'Sweden':['Göteborg'] },
+  'Asia-Pacific':{ 'Japan':['Tokyo','Sapporo'], 'Australia':['Sydney','Hobart'] }
+};
+const REGION_W = [['North America',46],['Europe',33],['Asia-Pacific',21]];
+const PROD = {
+  'Camp & Hike':{ 'Tents':['Ridgeline 2P','Basecamp 4P'], 'Sleeping Bags':['Nimbus −5','Featherline 0'], 'Backpacks':['Trailhead 45','Summit 65'] },
+  'Climb':{ 'Harnesses':['Vector Pro','Cinch Lite'], 'Ropes':['Dyneema 9.4','Halyard 10.2'], 'Rock Shoes':['Gecko LV','Talon HV'] },
+  'Paddle':{ 'Kayaks':['Fjord 14','Eddy 9'], 'Paddles':['Sweep Carbon','Sweep Alloy'], 'Dry Bags':['Seal 20L','Seal 40L'] },
+  'Snow':{ 'Skis':['Cirque 92','Cornice 106'], 'Boards':['Drift 154','Drift 162'], 'Goggles':['Whiteout Pro','Whiteout Lite'] }
+};
+const PRICE = { 'Tents':420,'Sleeping Bags':265,'Backpacks':195,'Harnesses':110,'Ropes':230,'Rock Shoes':155,
+  'Kayaks':980,'Paddles':185,'Dry Bags':45,'Skis':640,'Boards':570,'Goggles':135 };
+const MARGIN = { 'Tents':.41,'Sleeping Bags':.46,'Backpacks':.52,'Harnesses':.55,'Ropes':.38,'Rock Shoes':.49,
+  'Kayaks':.29,'Paddles':.44,'Dry Bags':.61,'Skis':.34,'Boards':.36,'Goggles':.58 };
+const CHANNELS = ['Online','Retail','Wholesale'];
+// month index 0..11 -> category weight
+const SEASON = {
+  'Camp & Hike':[4,5,9,16,22,26,28,26,19,10,6,5],
+  'Climb':      [11,12,14,16,17,17,16,16,16,15,13,12],
+  'Paddle':     [3,3,7,14,22,29,32,29,18,8,4,3],
+  'Snow':       [26,22,15,6,3,2,2,3,7,15,25,31]
+};
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const QUARTERS = ['Q1','Q2','Q3','Q4'];
+const DAYS_IN = [31,28,31,30,31,30,31,31,30,31,30,31];
+
+/* ── build the fact table ──────────────────────────────────────── */
+const cumDay = (()=>{ const a=[0]; for(let i=0;i<12;i++) a.push(a[i]+DAYS_IN[i]); return a })();
+const dayIndex = (m,d) => cumDay[m] + (d-1);
+
+const FACTS = [];
+for(let i=0;i<6400;i++){
+  const region = wpick(REGION_W);
+  const country = pick(Object.keys(GEO[region]));
+  const city = pick(GEO[region][country]);
+  const m = Math.floor(rnd()*12);
+  const cat = wpick(Object.keys(PROD).map(c=>[c,SEASON[c][m]]));
+  const sub = pick(Object.keys(PROD[cat]));
+  const item = pick(PROD[cat][sub]);
+  const ch = wpick([['Online',48],['Retail',36],['Wholesale',16]]);
+  const d = 1 + Math.floor(rnd()*DAYS_IN[m]);
+  const units = ch==='Wholesale' ? 4+Math.floor(rnd()*22) : 1+Math.floor(rnd()*3);
+  const disc = ch==='Wholesale' ? .28+rnd()*.1 : (ch==='Online' ? rnd()*.14 : rnd()*.07);
+  const price = PRICE[sub]*(1-disc)*(0.9+rnd()*0.2);
+  const rev = Math.round(price*units*100)/100;
+  const marg = MARGIN[sub]-disc*0.55+(rnd()-0.5)*0.05;
+  FACTS.push({
+    id:'MOS-'+(100000+i), region, country, city, cat, sub, item, ch,
+    m, d, q:QUARTERS[Math.floor(m/3)], di:dayIndex(m,d),
+    date:`2025-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`,
+    units, rev, cost: Math.round(rev*(1-marg)*100)/100
+  });
+}
+FACTS.sort((a,b)=>a.di-b.di || (a.id<b.id?-1:1));
+
+/* ── helpers ───────────────────────────────────────────────────── */
+// composite map keys: a control char cannot occur inside any dimension value
+const SEP = String.fromCharCode(31);
+
+// User-defined sales blocs — shared state: prototype 13 edits it, the workbench consumes it
+// as a real dimension. Edits broadcast so every consumer re-renders.
+const GROUPS = ['Americas','EMEA','Pacific'];
+const BLOC = {'United States':'Americas','Canada':'Americas','United Kingdom':'EMEA',
+              'Germany':'EMEA','Sweden':'EMEA','Japan':'Pacific','Australia':'Pacific'};
+const blocChanged = () => document.dispatchEvent(new Event('bloc-change'));
+const sum = (rows,f) => rows.reduce((s,r)=>s+f(r),0);
+const TOTAL_REV = sum(FACTS,r=>r.rev);
+
+function money(v){
+  const a=Math.abs(v);
+  if(a>=1e6) return '$'+(v/1e6).toFixed(2)+'M';
+  if(a>=1e4) return '$'+Math.round(v/1e3)+'K';
+  if(a>=1e3) return '$'+(v/1e3).toFixed(1)+'K';
+  return '$'+v.toFixed(0);
+}
+const exact = v => '$'+Math.round(v).toLocaleString('en-US');
+const num = v => v.toLocaleString('en-US');
+const pctf = v => (v*100).toFixed(1)+'%';
+
+function rollup(rows, keyFn){
+  const m = new Map();
+  for(const r of rows){
+    const k = keyFn(r);
+    let e = m.get(k); if(!e){ e={key:k, rev:0, cost:0, units:0, n:0}; m.set(k,e) }
+    e.rev+=r.rev; e.cost+=r.cost; e.units+=r.units; e.n++;
+  }
+  return [...m.values()].map(e=>({...e, margin: e.rev? (e.rev-e.cost)/e.rev : 0}));
+}
+const byRev = (a,b)=>b.rev-a.rev;
+
+const DEPTH = ['var(--d2)','var(--d3)','var(--d4)','var(--d1)'];
+
+function bars(el, items, opt={}){
+  const max = Math.max(1, ...items.map(i=>i.value));
+  const colour = opt.colour || DEPTH[opt.depth||0];
+  el.replaceChildren(...items.map(it=>{
+    const tag = it.onClick ? 'button' : 'div';
+    const n = document.createElement(tag);
+    n.className = 'barrow' + (it.dim?' dim':'');
+    if(tag==='button'){ n.type='button'; n.addEventListener('click', it.onClick); }
+    if(it.active) n.setAttribute('aria-current','true');
+    if(it.aria) n.setAttribute('aria-label', it.aria);
+    const l=document.createElement('span'); l.className='lbl'; l.textContent=it.label;
+    const t=document.createElement('span'); t.className='track';
+    const b=document.createElement('i'); b.style.width=(it.value/max*100).toFixed(2)+'%';
+    b.style.background = it.colour || colour; t.appendChild(b);
+    const v=document.createElement('span'); v.className='val'; v.textContent=it.right;
+    n.append(l,t,v); return n;
+  }));
+}
+
+function table(el, cols, rows, opt={}){
+  const thead=document.createElement('thead'); const tr=document.createElement('tr');
+  cols.forEach(c=>{ const th=document.createElement('th');
+    th.textContent=c.h; if(c.n) th.className='n';
+    if(c.sort){ th.classList.add('sortable'); th.tabIndex=0; th.setAttribute('role','button');
+      th.setAttribute('aria-sort', opt.sortKey===c.sort ? (opt.desc?'descending':'ascending') : 'none');
+      const go=()=>opt.onSort(c.sort);
+      th.addEventListener('click',go);
+      th.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){e.preventDefault();go()} });
+    }
+    tr.appendChild(th) });
+  thead.appendChild(tr);
+  const tb=document.createElement('tbody');
+  rows.forEach(r=>{ const t=document.createElement('tr');
+    cols.forEach(c=>{ const td=document.createElement('td'); if(c.n) td.className='n';
+      td.textContent=c.f(r); t.appendChild(td) });
+    tb.appendChild(t) });
+  el.replaceChildren(thead,tb);
+}
+
+function fill(sel, opts, cur){
+  sel.replaceChildren(...opts.map(o=>{ const e=document.createElement('option');
+    e.value = typeof o==='string'? o : o.v; e.textContent = typeof o==='string'? o : o.t;
+    if(e.value===cur) e.selected=true; return e }));
+}
+const $ = s => document.querySelector(s);
+
+/* ── hero strip ────────────────────────────────────────────────── */
+$('#s-rows').textContent = num(FACTS.length);
+$('#s-rev').textContent = money(TOTAL_REV);
+
+/* ══ 01 · hierarchical drilling ════════════════════════════════ */
+(() => {
+  const LEVELS = [
+    {name:'Region', key:r=>r.region},
+    {name:'Country', key:r=>r.country},
+    {name:'City',   key:r=>r.city}
+  ];
+  let path = []; // chosen values, one per level above current
+  const crumbs=$('#h-crumbs'), box=$('#h-bars'), read=$('#h-read');
+
+  function rowsAt(){
+    return FACTS.filter(r => path.every((v,i)=>LEVELS[i].key(r)===v));
+  }
+  function render(){
+    const lvl = path.length;
+    const rows = rowsAt();
+    const groups = lvl<LEVELS.length ? rollup(rows, LEVELS[lvl].key).sort(byRev) : [];
+    // crumbs
+    const parts=[];
+    const mk=(txt,i)=>{ const b=document.createElement('button'); b.type='button'; b.textContent=txt;
+      b.addEventListener('click',()=>{ path=path.slice(0,i); render() }); return b };
+    parts.push(mk('All regions',0));
+    path.forEach((v,i)=>{ const s=document.createElement('span'); s.className='sep'; s.textContent='›'; parts.push(s);
+      if(i===path.length-1){ const c=document.createElement('span'); c.className='cur'; c.textContent=v; parts.push(c) }
+      else parts.push(mk(v,i+1)) });
+    crumbs.replaceChildren(...parts);
+
+    if(lvl<LEVELS.length){
+      bars(box, groups.map(g=>({
+        label:g.key, value:g.rev, right:money(g.rev), depth:lvl,
+        colour: DEPTH[lvl],
+        aria:`${g.key}, ${exact(g.rev)}. Drill into ${LEVELS[lvl+1]?LEVELS[lvl+1].name:'detail'}.`,
+        onClick: lvl<LEVELS.length-1 ? ()=>{ path=[...path,g.key]; render() } : null
+      })), {depth:lvl});
+    } else box.replaceChildren();
+
+    const total = sum(rows,r=>r.rev);
+    read.innerHTML = `level <b>${lvl+1}/3 · ${LEVELS[Math.min(lvl,2)].name}</b> &nbsp;·&nbsp; `
+      + `<span class="k">${groups.length||'—'}</span> group${groups.length===1?'':'s'} &nbsp;·&nbsp; `
+      + `${num(rows.length)} leaf rows &nbsp;·&nbsp; <b>${exact(total)}</b> `
+      + `(${pctf(total/TOTAL_REV)} of company)`;
+  }
+  render();
+})();
+
+/* ══ 06 · drill-through ════════════════════════════════════════ */
+(() => {
+  const rs=$('#dt-region'), ms=$('#dt-month'), kp=$('#dt-kpis'), panel=$('#dt-panel'),
+        head=$('#dt-head'), tbl=$('#dt-tbl');
+  fill(rs, ['All regions', ...Object.keys(GEO)], 'All regions');
+  fill(ms, ['All months', ...MONTHS], 'Sep');
+  let open=null;
+
+  const rowsNow = () => FACTS.filter(r =>
+    (rs.value==='All regions'||r.region===rs.value) && (ms.value==='All months'||MONTHS[r.m]===ms.value));
+
+  function render(){
+    const rows=rowsNow();
+    const rev=sum(rows,r=>r.rev), cost=sum(rows,r=>r.cost), units=sum(rows,r=>r.units);
+    const defs=[
+      {k:'rev',  t:'Revenue',    v:money(rev),  s:'sum of line totals'},
+      {k:'ord',  t:'Orders',     v:num(rows.length), s:'leaf fact rows'},
+      {k:'unit', t:'Units',      v:num(units),  s:'quantity shipped'},
+      {k:'marg', t:'Gross margin', v:rev?pctf((rev-cost)/rev):'—', s:'recomputed, not averaged'}
+    ];
+    kp.replaceChildren(...defs.map(d=>{
+      const b=document.createElement('button'); b.className='kpi'; b.type='button';
+      b.setAttribute('aria-pressed', String(open===d.k));
+      b.innerHTML=`<dt>${d.t}</dt><dd>${d.v}</dd><small>${d.s}</small>`;
+      b.addEventListener('click',()=>{ open = open===d.k?null:d.k; render() });
+      return b;
+    }));
+
+    if(!open){ panel.hidden=true; return }
+    panel.hidden=false;
+    const sorted=[...rows].sort((a,b)=> open==='unit'? b.units-a.units : b.rev-a.rev).slice(0,150);
+    head.innerHTML = `<b>drill-through</b> → <span class="k">${num(rows.length)}</span> source records `
+      + `matching ${rs.value} / ${ms.value}. Showing the top ${sorted.length} by `
+      + `${open==='unit'?'units':'revenue'} — this is the fact table, not a summary.`;
+    table(tbl, [
+      {h:'Order', f:r=>r.id}, {h:'Date', f:r=>r.date}, {h:'City', f:r=>r.city},
+      {h:'Item', f:r=>r.item}, {h:'Ch.', f:r=>r.ch},
+      {h:'Units', n:1, f:r=>num(r.units)}, {h:'Revenue', n:1, f:r=>exact(r.rev)}
+    ], sorted);
+  }
+  rs.addEventListener('change',render); ms.addEventListener('change',render);
+  render();
+})();
+
+/* ══ 08 · zoom / level of detail ═══════════════════════════════ */
+(() => {
+  const a=$('#z-a'), b=$('#z-b'), sp=$('#z-spark'), read=$('#z-read');
+  const setWin=(x,y)=>{ a.value=x; b.value=y; render() };
+  document.querySelectorAll('[data-zoom]').forEach(btn=>btn.addEventListener('click',()=>{
+    const z=btn.dataset.zoom;
+    if(z==='all') setWin(0,364);
+    if(z==='q3')  setWin(dayIndex(6,1), dayIndex(8,30));
+    if(z==='aug') setWin(dayIndex(7,1), dayIndex(7,31));
+    if(z==='wk')  setWin(dayIndex(7,4), dayIndex(7,10));
+  }));
+  function render(){
+    let lo=+a.value, hi=+b.value; if(lo>hi){ [lo,hi]=[hi,lo] }
+    const span=hi-lo+1;
+    const grain = span>150 ? 'month' : span>45 ? 'week' : 'day';
+    const rows = FACTS.filter(r=>r.di>=lo && r.di<=hi);
+    const keyFn = grain==='month' ? (r=>r.m) : grain==='week' ? (r=>Math.floor(r.di/7)) : (r=>r.di);
+    const g = rollup(rows,keyFn).sort((x,y)=>x.key-y.key);
+    const max = Math.max(1,...g.map(x=>x.rev));
+    sp.replaceChildren(...g.map(x=>{ const i=document.createElement('i');
+      i.style.height=Math.max(2,x.rev/max*100)+'%';
+      i.title=`${grain} ${x.key}: ${exact(x.rev)}`;
+      if(x.rev===max) i.className='hot'; return i }));
+    const dstr = di => { let m=0; while(di>=cumDay[m+1]) m++; return `${MONTHS[m]} ${di-cumDay[m]+1}` };
+    read.innerHTML = `window <b>${dstr(lo)} → ${dstr(hi)}</b> (${span} days) &nbsp;·&nbsp; `
+      + `grain switched to <span class="k">${grain}</span> &nbsp;·&nbsp; ${g.length} bars &nbsp;·&nbsp; `
+      + `${num(rows.length)} rows &nbsp;·&nbsp; <b>${exact(sum(rows,r=>r.rev))}</b>`;
+  }
+  a.addEventListener('input',render); b.addEventListener('input',render); render();
+})();
+
+/* ══ 02 · slice & dice ═════════════════════════════════════════ */
+(() => {
+  const q=$('#sd-q'), c=$('#sd-cat'), ch=$('#sd-ch'), read=$('#sd-read'),
+        axes=$('#sd-axes'), ret=$('#sd-ret');
+  fill(q, ['All quarters',...QUARTERS], 'Q3');
+  fill(c, ['All categories',...Object.keys(PROD)], 'All categories');
+  fill(ch, ['All channels',...CHANNELS], 'Online');
+  const AX=[{n:'Quarter', sel:q, vals:QUARTERS},
+            {n:'Category', sel:c, vals:Object.keys(PROD)},
+            {n:'Channel', sel:ch, vals:CHANNELS}];
+  function render(){
+    const rows=FACTS.filter(r=>
+      (q.value==='All quarters'||r.q===q.value) &&
+      (c.value==='All categories'||r.cat===c.value) &&
+      (ch.value==='All channels'||r.ch===ch.value));
+    // draw the cube's axes: which members survive on each dimension
+    axes.replaceChildren(...AX.map(a=>{
+      const isPinned = !a.sel.value.startsWith('All');
+      const row=document.createElement('div'); row.className='axis';
+      const nm=document.createElement('span'); nm.className='an'; nm.textContent=a.n;
+      const cells=document.createElement('div'); cells.className='cells';
+      a.vals.forEach(v=>{ const s=document.createElement('span');
+        s.className='cell'+(isPinned ? (a.sel.value===v?' on':' off') : '');
+        s.textContent=v; cells.appendChild(s) });
+      row.append(nm,cells); return row;
+    }));
+    ret.style.width=(rows.length/FACTS.length*100).toFixed(2)+'%';
+    const pinned=[q,c,ch].filter(s=>!s.value.startsWith('All')).length;
+    const kind = pinned===0?'the whole cube':pinned===1?'a slice (one axis pinned)':`a dice (${pinned} axes pinned)`;
+    const rev=sum(rows,r=>r.rev);
+    read.innerHTML = `<b>${kind}</b> &nbsp;·&nbsp; address `
+      + `<span class="k">[${q.value.startsWith('All')?'*':q.value}, `
+      + `${c.value.startsWith('All')?'*':c.value}, ${ch.value.startsWith('All')?'*':ch.value}]</span><br>`
+      + `${num(rows.length)} of ${num(FACTS.length)} rows retained (${pctf(rows.length/FACTS.length)}) &nbsp;·&nbsp; `
+      + `<b>${exact(rev)}</b> &nbsp;·&nbsp; ${pctf(rev/TOTAL_REV)} of company revenue`
+      + (rows.length<40 ? `<br><span style="color:var(--signal)">thin cell — ${rows.length} rows is too few to read a trend from</span>` : '');
+  }
+  [q,c,ch].forEach(s=>s.addEventListener('change',render)); render();
+})();
+
+/* ══ 03 · filtering ════════════════════════════════════════════ */
+(() => {
+  const th=$('#f-th'), read=$('#f-read'), strip=$('#f-strip'), pass=$('#f-pass');
+  const cities=rollup(FACTS,r=>r.city).sort(byRev);
+  // Derive the range from the data so the control always opens on a meaningful split:
+  // a hardcoded floor can sit below every city and demonstrate nothing.
+  const hi=Math.ceil(cities[0].rev/10000)*10000;
+  const median=cities[Math.floor(cities.length/2)].rev;
+  th.min=Math.floor(cities[cities.length-1].rev/10000)*10000;
+  th.max=hi; th.value=Math.round(median/10000)*10000;
+  function render(){
+    const t=+th.value;
+    const keep=cities.filter(c=>c.rev>=t);
+    const kept=sum(keep,c=>c.rev);
+    read.innerHTML = `<b>HAVING SUM(revenue) &ge; ${exact(t)}</b><br>`
+      + `<span class="k">${keep.length}</span> of ${cities.length} cities pass &nbsp;·&nbsp; `
+      + `they hold <b>${exact(kept)}</b> — ${pctf(kept/TOTAL_REV)} of company revenue`
+      + (keep.length===0?` &nbsp;·&nbsp; <span style="color:var(--signal)">empty result</span>`:'');
+    // a threshold reads better as a distribution with a cut line than as ranked bars
+    const max=cities[0].rev, min=cities[cities.length-1].rev, span=Math.max(1,max-min);
+    const pos=v=>8+(v-min)/span*84;
+    const nodes=cities.map((c,i)=>{ const d=document.createElement('span');
+      d.className='dot'+(c.rev>=t?'':' fail');
+      d.style.left=pos(c.rev)+'%'; d.style.top=[26,48,70][i%3]+'%';
+      d.title=`${c.key} — ${exact(c.rev)}`;
+      return d });
+    const line=document.createElement('span'); line.className='thr';
+    line.style.left=Math.max(0,Math.min(100,pos(t)))+'%';
+    const cap=document.createElement('b'); cap.textContent='cut'; line.appendChild(cap);
+    const lo=document.createElement('span'); lo.className='axl'; lo.style.left='6px'; lo.textContent=money(min);
+    const hi2=document.createElement('span'); hi2.className='axl'; hi2.style.right='6px'; hi2.textContent=money(max);
+    strip.replaceChildren(...nodes, line, lo, hi2);
+    pass.innerHTML = keep.length
+      ? `<b>Passing (${keep.length})</b>${keep.map(c=>c.key).join(' · ')}`
+      : `<b>Passing (0)</b><span class="muted">Nothing clears the cut — a filter that returns nothing still has to say so.</span>`;
+  }
+  th.addEventListener('input',render); render();
+})();
+
+/* ══ 07 · cross-filtering ══════════════════════════════════════ */
+(() => {
+  // Four different mark types, one shared predicate — that is what "linked views" means.
+  const sel={cat:null, ch:null, m:null};
+  const pills=$('#x-pills'), read=$('#x-read'), monEl=$('#x-mon'), monL=$('#x-monl'),
+        chEl=$('#x-ch'), catEl=$('#x-cat'), kpiEl=$('#x-kpi');
+  const LABEL={cat:'category', ch:'channel', m:'month'};
+  const match=(r,skip)=>Object.entries(sel).every(([k,v])=>v===null||k===skip||r[k]===v);
+  function render(){
+    const active=Object.entries(sel).filter(([,v])=>v!==null);
+    pills.replaceChildren(...(active.length?active.map(([k,v])=>{
+      const s=document.createElement('span'); s.className='pill';
+      s.append(document.createTextNode(`${LABEL[k]} = ${k==='m'?MONTHS[v]:v}`));
+      const b=document.createElement('button'); b.type='button'; b.textContent='×';
+      b.setAttribute('aria-label',`Clear ${LABEL[k]} filter`);
+      b.addEventListener('click',()=>{ sel[k]=null; render() }); s.appendChild(b); return s;
+    }):[Object.assign(document.createElement('span'),{className:'none',textContent:'no selection — click a column, chip or bar'})]));
+    if(active.length){
+      const clr=document.createElement('button'); clr.className='btn sm'; clr.textContent='Clear all';
+      clr.addEventListener('click',()=>{ sel.cat=sel.ch=sel.m=null; render() }); pills.appendChild(clr);
+    }
+
+    // widget 1 — time columns
+    const mRows=FACTS.filter(r=>match(r,'m'));
+    const mg=rollup(mRows,r=>r.m); const mMap=new Map(mg.map(g=>[g.key,g.rev]));
+    const mMax=Math.max(1,...mg.map(g=>g.rev));
+    monEl.replaceChildren(...MONTHS.map((name,i)=>{
+      const v=mMap.get(i)||0; const b=document.createElement('button'); b.type='button';
+      b.style.height=Math.max(3,v/mMax*100)+'%';
+      if(sel.m!==null && sel.m!==i) b.className='off';
+      b.setAttribute('aria-pressed', String(sel.m===i));
+      b.setAttribute('aria-label',`${name}, ${exact(v)}. ${sel.m===i?'Selected — click to clear.':'Click to cross-filter.'}`);
+      b.addEventListener('click',()=>{ sel.m = sel.m===i?null:i; render() });
+      return b;
+    }));
+    monL.replaceChildren(...MONTHS.map(n=>{ const s=document.createElement('span'); s.textContent=n[0]; return s }));
+
+    // widget 2 — channel chips
+    const chRows=FACTS.filter(r=>match(r,'ch'));
+    const cg=new Map(rollup(chRows,r=>r.ch).map(g=>[g.key,g.rev]));
+    chEl.replaceChildren(...CHANNELS.map(name=>{
+      const v=cg.get(name)||0; const b=document.createElement('button'); b.type='button';
+      b.textContent=`${name} · ${money(v)}`;
+      b.setAttribute('aria-pressed', String(sel.ch===name));
+      b.addEventListener('click',()=>{ sel.ch = sel.ch===name?null:name; render() });
+      return b;
+    }));
+
+    // widget 3 — category bars
+    const catRows=FACTS.filter(r=>match(r,'cat'));
+    bars(catEl, rollup(catRows,r=>r.cat).sort(byRev).map(x=>({
+      label:x.key, value:x.rev, right:money(x.rev), active:sel.cat===x.key,
+      colour: sel.cat&&sel.cat!==x.key ? 'var(--d1)' : 'var(--d3)',
+      aria:`${x.key}, ${exact(x.rev)}. ${sel.cat===x.key?'Selected — click to clear.':'Click to cross-filter.'}`,
+      onClick:()=>{ sel.cat = sel.cat===x.key?null:x.key; render() }
+    })));
+
+    // widget 4 — KPIs, which only read the predicate
+    const rows=FACTS.filter(r=>match(r));
+    const rev=sum(rows,r=>r.rev), cost=sum(rows,r=>r.cost);
+    kpiEl.replaceChildren(...[
+      ['Revenue', money(rev)], ['Orders', num(rows.length)],
+      ['Margin', rev?pctf((rev-cost)/rev):'—'], ['Share of total', pctf(rev/TOTAL_REV)]
+    ].map(([t,v])=>{ const d=document.createElement('div'); d.className='kpi';
+      d.innerHTML=`<dt>${t}</dt><dd>${v}</dd>`; return d }));
+
+    const q = active.length ? active.map(([k,v])=>`${LABEL[k]} = '${k==='m'?MONTHS[v]:v}'`).join(' AND ') : 'true';
+    read.innerHTML = `one predicate, <b>4 widgets</b>: <span class="k">WHERE ${q}</span><br>`
+      + `${num(rows.length)} rows &nbsp;·&nbsp; <b>${exact(rev)}</b> &nbsp;·&nbsp; `
+      + `each widget excludes its own axis from the filter, or clicking a bar would leave only that bar`;
+  }
+  render();
+})();
+
+/* ══ 04 · sorting & grouping ═══════════════════════════════════ */
+(() => {
+  const dim=$('#sg-dim'), tbl=$('#sg-tbl'), read=$('#sg-read');
+  const DIMS={ 'Category':r=>r.cat, 'Subcategory':r=>r.sub, 'Item':r=>r.item, 'City':r=>r.city, 'Channel':r=>r.ch };
+  fill(dim, Object.keys(DIMS), 'Subcategory');
+  let key='margin', desc=true;
+  function render(){
+    const g=rollup(FACTS, DIMS[dim.value]);
+    g.sort((a,b)=>{ const d = key==='key' ? (a.key<b.key?-1:1) : a[key]-b[key]; return desc?-d:d });
+    table(tbl, [
+      {h:dim.value, sort:'key', f:r=>r.key},
+      {h:'Revenue', n:1, sort:'rev', f:r=>exact(r.rev)},
+      {h:'Units', n:1, sort:'units', f:r=>num(r.units)},
+      {h:'Margin %', n:1, sort:'margin', f:r=>pctf(r.margin)}
+    ], g, {sortKey:key, desc, onSort:k=>{ if(k===key) desc=!desc; else {key=k; desc=k!=='key'} render() }});
+    const best=g.reduce((a,b)=>a.margin>b.margin?a:b);
+    const worst=g.reduce((a,b)=>a.margin<b.margin?a:b);
+    read.innerHTML = `<b>GROUP BY ${dim.value.toLowerCase()} ORDER BY ${key} ${desc?'DESC':'ASC'}</b> &nbsp;·&nbsp; `
+      + `${g.length} groups<br>margin spread <span class="k">${pctf(worst.margin)} → ${pctf(best.margin)}</span> `
+      + `(${worst.key} → ${best.key}) — each recomputed from its own revenue and cost`;
+  }
+  dim.addEventListener('change',render); render();
+})();
+
+/* ══ 13 · logical grouping ═════════════════════════════════════ */
+(() => {
+  const sizeBand=r=> r.units>=8 ? 'Bulk (8+)' : r.units>=3 ? 'Multi (3–7)' : 'Single (1–2)';
+
+  // Rank cities on whatever rows survive the filter, then cut into thirds.
+  function quintile(rows){
+    const c=rollup(rows,r=>r.city).sort(byRev), m=new Map();
+    c.forEach((e,i)=> m.set(e.key, i<Math.ceil(c.length*.25) ? 'Top quarter'
+                                 : i<Math.ceil(c.length*.6) ? 'Middle' : 'Tail'));
+    return m;
+  }
+
+  const KINDS={
+    'Sales bloc — mapped from country':{
+      id:'mapped', drillable:true, entity:'countries',
+      group:(r,ctx)=>BLOC[r.country], child:r=>r.country, childName:'Country',
+      keys:()=>Object.keys(BLOC), member:(k,ctx)=>BLOC[k],
+      why:'Membership is a fixed mapping from a dimension member — the mapping you can edit above. It is '
+        + 'decided before any query runs, so the group behaves exactly like a declared level: the drill '
+        + 'descends into it the same way Region descends into Country, however you rearrange it.'
+    },
+    'Order size band — derived per row':{
+      id:'row', drillable:true, entity:'orders',
+      group:r=>sizeBand(r), child:r=>r.cat, childName:'Category',
+      keys:()=>FACTS.map(r=>r.id), member:(k,ctx)=>ctx.byId.get(k),
+      why:'Membership is a function of the row\'s own values, settled at ingest. A filter removes rows '
+        + 'but can never move one between bands, so the band is safe to drill and safe to pre-aggregate.'
+    },
+    'Revenue quarter — derived from the aggregate':{
+      id:'agg', drillable:false, entity:'cities',
+      group:(r,ctx)=>ctx.band.get(r.city), child:r=>r.city, childName:'City',
+      keys:()=>[...new Set(FACTS.map(r=>r.city))], member:(k,ctx)=>ctx.band.get(k),
+      why:'Membership is recomputed from the aggregate over whatever rows survive. Drilling applies a '
+        + 'filter, the ranking changes underneath it, and the label on the group you clicked now describes '
+        + 'a different set than the one you clicked on.'
+    }
+  };
+  const FILTERS={
+    'no filter — all rows': ()=>true,
+    'Online channel only': r=>r.ch==='Online',
+    'Q4 only': r=>r.q==='Q4',
+    'Wholesale only': r=>r.ch==='Wholesale'
+  };
+
+  const kindSel=$('#lg-kind'), fSel=$('#lg-filter'), verdict=$('#lg-verdict'),
+        crumbs=$('#lg-crumbs'), box=$('#lg-bars'), read=$('#lg-read'),
+        editor=$('#lg-editor'), mapEl=$('#lg-map'), newG=$('#lg-newgrp'), addG=$('#lg-addgrp');
+  fill(kindSel, Object.keys(KINDS)); fill(fSel, Object.keys(FILTERS));
+  let open=null;
+
+  function buildEditor(){
+    mapEl.replaceChildren(...Object.keys(BLOC).map(cty=>{
+      const l=document.createElement('label');
+      const s=document.createElement('span'); s.textContent=cty;
+      const sel=document.createElement('select');
+      fill(sel, GROUPS, BLOC[cty]);
+      sel.setAttribute('aria-label','Group for '+cty);
+      sel.addEventListener('change',()=>{ BLOC[cty]=sel.value; blocChanged(); render() });
+      l.append(s,sel); return l;
+    }));
+  }
+  addG.addEventListener('click',()=>{
+    const nm=newG.value.trim();
+    if(nm && !GROUPS.includes(nm)){ GROUPS.push(nm); newG.value=''; buildEditor() }
+  });
+  newG.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); addG.click() } });
+
+  const ctxFor=rows=>({band:quintile(rows), byId:new Map(rows.map(r=>[r.id, sizeBand(r)]))});
+
+  function render(){
+    const K=KINDS[kindSel.value], f=FILTERS[fSel.value];
+    editor.hidden = K.id!=='mapped';
+    if(!editor.hidden) buildEditor();
+    const rows=FACTS.filter(f);
+    const ctxAll=ctxFor(FACTS), ctxNow=ctxFor(rows);
+
+    // Compare membership before and after the filter — computed, not claimed.
+    const keys=K.keys();
+    let checked=0, moved=[];
+    for(const k of keys){
+      const a=K.member(k,ctxAll), b=K.member(k,ctxNow);
+      if(b===undefined) continue;            // dropped by the filter, not moved
+      checked++; if(a!==b) moved.push(k);
+    }
+    // The verdict follows how membership is DEFINED, not whether this particular filter happened to
+    // disturb it — a measure-derived group is unsafe even at the moment nothing has moved yet.
+    const noop = fSel.value.startsWith('no filter');
+    verdict.className='verdict '+(K.drillable?'yes':'no');
+    const evidence = moved.length
+      ? `<b style="display:inline">${moved.length}</b> of ${num(checked)} ${K.entity} changed group — `
+        + `${moved.slice(0,4).join(', ')}${moved.length>4?`, +${moved.length-4} more`:''}.`
+      : noop && !K.drillable
+        ? `nothing has moved yet — but that is only because no filter is applied. Pick one above.`
+        : `<b style="display:inline">0</b> of ${num(checked)} ${K.entity} changed group.`;
+    verdict.innerHTML = `<b>${K.drillable?'Drills cleanly':'Does not drill safely'}</b>`
+      + `Under <i>${fSel.value}</i>: ${evidence} ${K.why}`;
+
+    const groups=rollup(rows, r=>K.group(r,ctxNow)).sort(byRev);
+    const parts=[];
+    const home=document.createElement('button'); home.type='button'; home.textContent='All groups';
+    home.addEventListener('click',()=>{ open=null; render() }); parts.push(home);
+    if(open){ const s=document.createElement('span'); s.className='sep'; s.textContent='›';
+      const c=document.createElement('span'); c.className='cur'; c.textContent=open; parts.push(s,c) }
+    crumbs.replaceChildren(...parts);
+
+    if(!open){
+      bars(box, groups.map(g=>({
+        label:g.key, value:g.rev, right:money(g.rev), depth:0,
+        aria:`${g.key}, ${exact(g.rev)}. Drill into ${K.childName.toLowerCase()}.`,
+        onClick:()=>{ open=g.key; render() }
+      })));
+      read.innerHTML = `<b>${groups.length}</b> logical groups over ${num(rows.length)} rows &nbsp;·&nbsp; `
+        + `<b>${exact(sum(rows,r=>r.rev))}</b> &nbsp;·&nbsp; click a group to drill one level into `
+        + `${K.childName.toLowerCase()}`;
+    } else {
+      const inner=rows.filter(r=>K.group(r,ctxNow)===open);
+      const kids=rollup(inner, K.child).sort(byRev);
+      bars(box, kids.map(g=>({label:g.key, value:g.rev, right:money(g.rev), colour:'var(--d4)'})));
+      read.innerHTML = `inside <b>${open}</b> &nbsp;·&nbsp; ${kids.length} ${K.childName.toLowerCase()} `
+        + `&nbsp;·&nbsp; ${num(inner.length)} rows &nbsp;·&nbsp; <b>${exact(sum(inner,r=>r.rev))}</b>`
+        + (K.drillable ? '' : `<br><span style="color:var(--signal)">this membership was recomputed for the current filter — the same click under a different filter lands on a different set</span>`);
+    }
+  }
+  kindSel.addEventListener('change',()=>{ open=null; render() });
+  fSel.addEventListener('change',render);
+  render();
+})();
+
+/* ══ crosstab helper (used by 05 and 09) ═══════════════════════ */
+const DIMDEF = {
+  'Region':{k:r=>r.region, vals:Object.keys(GEO)},
+  'Country':{k:r=>r.country, vals:Object.values(GEO).flatMap(c=>Object.keys(c))},
+  'City':{k:r=>r.city, vals:Object.values(GEO).flatMap(c=>Object.values(c).flat())},
+  'Quarter':{k:r=>r.q, vals:QUARTERS},
+  'Month':{k:r=>MONTHS[r.m], vals:MONTHS},
+  'Category':{k:r=>r.cat, vals:Object.keys(PROD)},
+  'Subcategory':{k:r=>r.sub, vals:Object.keys(PROD).flatMap(c=>Object.keys(PROD[c]))},
+  'Item':{k:r=>r.item, vals:Object.values(PROD).flatMap(s=>Object.values(s).flat())},
+  'Channel':{k:r=>r.ch, vals:CHANNELS}
+};
+function crosstab(el, rowsDim, colsDim, rows, opt={}){
+  const measure=opt.measure||'rev', shade=opt.shade!==false;
+  const R=DIMDEF[rowsDim], C=DIMDEF[colsDim];
+  const acc=new Map();
+  for(const r of rows){ const k=R.k(r)+SEP+C.k(r);
+    let e=acc.get(k); if(!e){ e={rev:0,cost:0,units:0}; acc.set(k,e) }
+    e.rev+=r.rev; e.cost+=r.cost; e.units+=r.units }
+  // a ratio is derived from its own numerator and denominator — never summed across cells
+  const val=e=> measure==='rev'? e.rev : measure==='units'? e.units : (e.rev? (e.rev-e.cost)/e.rev : 0);
+  const fmt=v=> measure==='rev'? money(v) : measure==='units'? num(Math.round(v)) : pctf(v);
+  const cell=new Map(); let max=0;
+  for(const [k,e] of acc){ const v=val(e); cell.set(k,v); if(v>max)max=v }
+  const rv=R.vals.filter(v=>C.vals.some(c=>cell.has(v+SEP+c)));
+  const thead=document.createElement('thead'); const tr=document.createElement('tr');
+  const corner=document.createElement('th'); corner.textContent=`${rowsDim} ╲ ${colsDim}`; tr.appendChild(corner);
+  C.vals.forEach(c=>{ const th=document.createElement('th'); th.className='n'; th.textContent=c; tr.appendChild(th) });
+  const tot=document.createElement('th'); tot.className='n'; tot.textContent='Total'; tr.appendChild(tot);
+  thead.appendChild(tr);
+  const tb=document.createElement('tbody');
+  rv.forEach(r=>{
+    const t=document.createElement('tr');
+    const th=document.createElement('th'); th.scope='row'; th.textContent=r; t.appendChild(th);
+    let rowTot=0;
+    C.vals.forEach(c=>{
+      const v=cell.get(r+SEP+c); rowTot+=(v||0);
+      const td=document.createElement('td'); td.textContent=(v===undefined)?'·':fmt(v);
+      if(shade && v) td.style.background=`color-mix(in oklab, var(--accent) ${(v/max*38).toFixed(1)}%, var(--surface))`;
+      t.appendChild(td);
+    });
+    // a row total is only meaningful for additive measures; a ratio row shows a dash instead
+    const tt=document.createElement('td');
+    tt.textContent = measure==='margin' ? '—' : fmt(rowTot);
+    tt.style.fontWeight='600'; tt.style.borderLeft='1px solid var(--line)'; t.appendChild(tt);
+    tb.appendChild(t);
+  });
+  el.replaceChildren(thead,tb);
+  return {rows:rv.length, cols:C.vals.length, cells:rv.length*C.vals.length, filled:cell.size, max};
+}
+
+/* ══ 05 · pivot ════════════════════════════════════════════════ */
+(() => {
+  const r=$('#pv-r'), c=$('#pv-c'), swap=$('#pv-swap'), tbl=$('#pv-tbl'), read=$('#pv-read');
+  const opts=['Region','Country','City','Category','Subcategory','Item','Channel','Quarter','Month'];
+  fill(r,opts,'Region'); fill(c,opts,'Month');
+  function render(){
+    if(r.value===c.value){ read.innerHTML='<span style="color:var(--signal)">Rows and columns must differ — a dimension cannot be crossed with itself.</span>'; tbl.replaceChildren(); return }
+    const st=crosstab(tbl, r.value, c.value, FACTS);
+    read.innerHTML = `<b>${st.rows} × ${st.cols}</b> = ${num(st.cells)} cells, `
+      + `<span class="k">${num(st.filled)}</span> populated (${pctf(st.filled/st.cells)} dense) &nbsp;·&nbsp; `
+      + `shading is linear on revenue, peak ${money(st.max)}`
+      + (st.cols>16?` &nbsp;·&nbsp; <span style="color:var(--signal)">${st.cols} columns — past a readable width</span>`:'');
+  }
+  r.addEventListener('change',render); c.addEventListener('change',render);
+  swap.addEventListener('click',()=>{ const t=r.value; r.value=c.value; c.value=t; render() });
+  render();
+})();
+
+/* ══ 09 · OLAP operations ══════════════════════════════════════ */
+(() => {
+  const GEOL=['Region','Country','City'], TIMEL=['Quarter','Month'];
+  const ROT=['Quarter','Month','Category','Channel'];
+  const init=()=>({lvl:0, rowsDim:'Region', colsDim:'Quarter', rotIdx:0, slice:null, dice:null, swapped:false});
+  let S=init(); const log=[];
+  const addr=$('#ol-addr'), tbl=$('#ol-tbl'), logEl=$('#ol-log');
+
+  function rowsNow(){
+    return FACTS.filter(r=>(!S.slice||r.ch===S.slice) && (!S.dice||S.dice.includes(r.cat)));
+  }
+  function render(msg){
+    if(msg){ log.push(msg); if(log.length>40) log.shift() }
+    const rows=rowsNow();
+    const rd = S.swapped ? S.colsDim : S.rowsDim;
+    const cd = S.swapped ? S.rowsDim : S.colsDim;
+    // plain numerals here — the heat shading belongs to the pivot card, this one is about the address
+    const st=crosstab(tbl, rd, cd, rows, {measure:$('#ol-measure').value, shade:false});
+    addr.innerHTML = `cube address &nbsp;<span class="k">[rows: ${rd} · cols: ${cd} · `
+      + `channel: ${S.slice||'*'} · category: ${S.dice?S.dice.join('|'):'*'}]</span><br>`
+      + `depth <b>${S.lvl+1}/3</b> on the geography axis &nbsp;·&nbsp; ${st.rows}×${st.cols} grid &nbsp;·&nbsp; `
+      + `${num(rows.length)} rows &nbsp;·&nbsp; <b>${exact(sum(rows,r=>r.rev))}</b>`;
+    logEl.replaceChildren(...[...log].reverse().map(l=>{ const s=document.createElement('span'); s.textContent=l; return s }));
+  }
+  document.querySelectorAll('[data-olap]').forEach(b=>b.addEventListener('click',()=>{
+    const op=b.dataset.olap;
+    if(op==='drill'){ if(S.lvl<2){ S.lvl++; S.rowsDim=GEOL[S.lvl]; render(`DRILL DOWN → ${GEOL[S.lvl]}`) }
+                      else render('DRILL DOWN → refused: already at leaf level (City)') }
+    else if(op==='roll'){ if(S.lvl>0){ S.lvl--; S.rowsDim=GEOL[S.lvl]; render(`ROLL UP → ${GEOL[S.lvl]}`) }
+                          else render('ROLL UP → refused: already at the apex') }
+    else if(op==='pivot'){ S.swapped=!S.swapped; render(`PIVOT → axes ${S.swapped?'swapped':'restored'}`) }
+    else if(op==='rotate'){ S.rotIdx=(S.rotIdx+1)%ROT.length; S.colsDim=ROT[S.rotIdx]; render(`ROTATE → column axis is now ${S.colsDim}`) }
+    else if(op==='slice'){ const i=S.slice?CHANNELS.indexOf(S.slice)+1:0;
+        S.slice = i>=CHANNELS.length ? null : CHANNELS[i];
+        render(`SLICE → channel = ${S.slice||'* (released)'}`) }
+    else if(op==='dice'){ const sets=[null,['Snow','Climb'],['Paddle','Camp & Hike']];
+        const cur=sets.findIndex(s=>JSON.stringify(s)===JSON.stringify(S.dice));
+        S.dice=sets[(cur+1)%sets.length];
+        render(`DICE → category ∈ ${S.dice?'{'+S.dice.join(', ')+'}':'* (released)'}`) }
+    else { S=init(); log.length=0; render('RESET → apex of the cube') }
+  }));
+  $('#ol-measure').addEventListener('change',e=>render(`MEASURE → ${e.target.selectedOptions[0].textContent}`));
+  render('READY → [rows: Region · cols: Quarter]');
+})();
+
+/* ══ 10 · query-based retrieval ════════════════════════════════ */
+(() => {
+  const dim=$('#q-dim'), reg=$('#q-reg'), lim=$('#q-lim'), sql=$('#q-sql'), tbl=$('#q-tbl');
+  const DIMS={ 'City':{c:'city', k:r=>r.city}, 'Item':{c:'item', k:r=>r.item},
+               'Subcategory':{c:'subcategory', k:r=>r.sub}, 'Channel':{c:'channel', k:r=>r.ch} };
+  fill(dim, Object.keys(DIMS), 'Item');
+  fill(reg, ['(none)', ...Object.keys(GEO)], 'Europe');
+  function render(){
+    const D=DIMS[dim.value];
+    const filtered = reg.value==='(none)' ? FACTS : FACTS.filter(r=>r.region===reg.value);
+    const g = rollup(filtered, D.k).sort(byRev).slice(0, +lim.value);
+    sql.innerHTML =
+`<b>SELECT</b>   ${D.c},
+         sum(revenue)            <b>AS</b> revenue,
+         sum(revenue - cost)     <b>AS</b> gross_profit,
+         sum(revenue) / nullif(sum(cost),0) <b>AS</b> ratio
+<b>FROM</b>     sales.fact_order_line
+${reg.value==='(none)' ? '<span class="muted">-- no region predicate</span>' : `<b>WHERE</b>    region = <i>:region</i>            <span class="muted">-- bound = '${reg.value}'</span>`}
+<b>GROUP BY</b> ${D.c}
+<b>ORDER BY</b> revenue <b>DESC</b>
+<b>LIMIT</b>    <i>:limit</i>                  <span class="muted">-- bound = ${lim.value}, hard-capped at 500</span>`;
+    table(tbl, [
+      {h:dim.value, f:r=>r.key},
+      {h:'Revenue', n:1, f:r=>exact(r.rev)},
+      {h:'Gross profit', n:1, f:r=>exact(r.rev-r.cost)},
+      {h:'Margin', n:1, f:r=>pctf(r.margin)}
+    ], g);
+  }
+  [dim,reg,lim].forEach(s=>s.addEventListener('change',render)); render();
+})();
+
+/* ══ 11 · pre-aggregation ══════════════════════════════════════ */
+(() => {
+  const bar=$('#pa-bar'), read=$('#pa-read'), scan=$('#pa-scan'), tbl=$('#pa-tbl'), cap=$('#pa-cap');
+  // the pre-built summary: one row per (region, month)
+  const SUMMARY = rollup(FACTS, r=>r.region+SEP+r.m);
+  const RATE = 42000; // modelled rows scanned per millisecond
+  function run(mode){
+    const scanned = mode==='summary' ? SUMMARY.length : FACTS.length;
+    const ms = Math.max(1.2, scanned/RATE) + (mode==='summary'?0.4:2.6);
+    const g = rollup(FACTS, r=>r.region).sort(byRev);
+    read.innerHTML = `<b>${mode==='summary'?'agg_revenue_by_region_month':'fact_order_line'}</b> &nbsp;·&nbsp; `
+      + `<span class="k">${num(scanned)}</span> rows scanned &nbsp;·&nbsp; `
+      + `modelled <b>${ms.toFixed(2)} ms</b> &nbsp;·&nbsp; `
+      + (mode==='summary'
+          ? `${(FACTS.length/SUMMARY.length).toFixed(0)}× less work — and identical answers, because the summary was built by the same roll-up`
+          : `the only path that can answer a question the summary did not anticipate`);
+
+    // show the two scan volumes against each other — the ratio is the whole argument
+    scan.replaceChildren(...[
+      ['agg table', SUMMARY.length, 'var(--d3)', 'summary'],
+      ['fact table', FACTS.length, 'var(--d4)', 'raw']
+    ].map(([label,rows,col,which])=>{
+      const row=document.createElement('div'); row.className='scanrow'+(which===mode?' cur':'');
+      const l=document.createElement('span'); l.textContent=label;
+      const b=document.createElement('span'); b.className='sb';
+      const i=document.createElement('i');
+      i.style.width=(rows/FACTS.length*100).toFixed(2)+'%'; i.style.background=col;
+      b.appendChild(i);
+      const v=document.createElement('span'); v.className='sv'; v.textContent=num(rows)+' rows';
+      row.append(l,b,v); return row;
+    }));
+
+    // and show what a pre-aggregate actually is
+    cap.textContent = mode==='summary'
+      ? 'agg_revenue_by_region_month — the whole table, all 36 rows'
+      : 'fact_order_line — first rows of 6,400, at leaf grain';
+    if(mode==='summary'){
+      const srows=SUMMARY.map(e=>{ const [reg,m]=e.key.split(SEP);
+        return {a:reg, b:MONTHS[+m], rev:e.rev, n:e.n} })
+        .sort((x,y)=> x.a<y.a?-1: x.a>y.a?1 : MONTHS.indexOf(x.b)-MONTHS.indexOf(y.b));
+      table(tbl,[{h:'region',f:r=>r.a},{h:'month',f:r=>r.b},
+        {h:'revenue',n:1,f:r=>exact(r.rev)},{h:'rows folded in',n:1,f:r=>num(r.n)}], srows);
+    } else {
+      table(tbl,[{h:'order',f:r=>r.id},{h:'date',f:r=>r.date},{h:'city',f:r=>r.city},
+        {h:'item',f:r=>r.item},{h:'revenue',n:1,f:r=>exact(r.rev)}], FACTS.slice(0,60));
+    }
+    // decoration last, and never on the critical path: a missing rAF must not cost the readout
+    bar.style.width='0%'; bar.className = mode==='raw' ? 'slow' : '';
+    const paint=()=>{ bar.style.transition='width .5s ease'; bar.style.width=Math.min(100, ms/4.2*100)+'%' };
+    if(typeof requestAnimationFrame==='function') requestAnimationFrame(paint); else paint();
+  }
+  document.querySelectorAll('[data-agg]').forEach(b=>b.addEventListener('click',()=>{
+    document.querySelectorAll('[data-agg]').forEach(o=>o.classList.toggle('p', o===b));
+    run(b.dataset.agg);
+  }));
+  run('summary');
+})();
+
+/* ══ 12 · lazy loading ═════════════════════════════════════════ */
+(() => {
+  const size=$('#lz-size'), more=$('#lz-more'), reset=$('#lz-reset'), read=$('#lz-read'), tbl=$('#lz-tbl');
+  const SRC = [...FACTS].sort((a,b)=>b.rev-a.rev || (a.id<b.id?-1:1));
+  let loaded=0, pages=0;
+  function fetchPage(){
+    const n=+size.value; loaded=Math.min(SRC.length, loaded+n); pages++; render();
+  }
+  function render(){
+    const shown=SRC.slice(0,loaded);
+    const cursor = loaded>=SRC.length ? 'null' : 'cur_'+SRC[loaded-1].id.slice(4)+'_'+loaded.toString(36);
+    more.disabled = loaded>=SRC.length;
+    more.textContent = loaded>=SRC.length ? 'End of result set' : 'Load next page';
+    $('#lz-prog').style.width=(loaded/SRC.length*100).toFixed(2)+'%';
+    read.innerHTML = `<b>${num(loaded)}</b> of ${num(SRC.length)} rows delivered in `
+      + `<span class="k">${pages}</span> request${pages===1?'':'s'} &nbsp;·&nbsp; `
+      + `next cursor <span class="k">${cursor}</span><br>`
+      + `payload held in memory: ~${num(Math.round(loaded*0.16))} KB of a possible `
+      + `${num(Math.round(SRC.length*0.16))} KB &nbsp;·&nbsp; keyset on (revenue DESC, order_id) — stable under concurrent writes`;
+    table(tbl, [
+      {h:'#', n:1, f:r=>num(SRC.indexOf(r)+1)}, {h:'Order', f:r=>r.id},
+      {h:'Date', f:r=>r.date}, {h:'City', f:r=>r.city}, {h:'Item', f:r=>r.item},
+      {h:'Revenue', n:1, f:r=>exact(r.rev)}
+    ], shown);
+  }
+  more.addEventListener('click',fetchPage);
+  reset.addEventListener('click',()=>{ loaded=0; pages=0; fetchPage() });
+  size.addEventListener('change',()=>{ loaded=0; pages=0; fetchPage() });
+  fetchPage();
+})();
+
+/* ══ workbench · all thirteen on one surface ═══════════════════ */
+(() => {
+  const WD={ 'Sales bloc':r=>BLOC[r.country], 'Region':r=>r.region, 'Country':r=>r.country,
+    'City':r=>r.city, 'Category':r=>r.cat, 'Subcategory':r=>r.sub, 'Item':r=>r.item,
+    'Channel':r=>r.ch, 'Quarter':r=>r.q, 'Month':r=>MONTHS[r.m] };
+  const WCOL={ 'Sales bloc':'bloc', 'Region':'region', 'Country':'country', 'City':'city',
+    'Category':'category', 'Subcategory':'subcategory', 'Item':'item', 'Channel':'channel',
+    'Quarter':'quarter', 'Month':'month' };
+  // declared hierarchies — the same fact that makes prototype 01 work makes the canvas drillable
+  const childOf={ 'Sales bloc':'Country', 'Region':'Country', 'Country':'City',
+    'Category':'Subcategory', 'Subcategory':'Item', 'Quarter':'Month' };
+  const DIMS=Object.keys(WD);
+  const MEAS={
+    rev:   {label:'Revenue',  agg:'sum(revenue)', alias:'revenue', fmt:money, val:g=>g.rev},
+    units: {label:'Units',    agg:'sum(units)',   alias:'units',   fmt:v=>num(Math.round(v)), val:g=>g.units},
+    margin:{label:'Margin %', agg:'sum(revenue - cost) / nullif(sum(revenue),0)', alias:'margin', fmt:pctf, val:g=>g.margin}
+  };
+  let rootDim='Region', path=[], filters=[], measure='rev', view='bar';
+
+  const dimsEl=$('#wb-dims'), measEl=$('#wb-meas'), rowsShelf=$('#wb-rows'), rowPill=$('#wb-rowpill'),
+        filterShelf=$('#wb-filters'), fpills=$('#wb-fpills'), fdim=$('#wb-fdim'), fval=$('#wb-fval'),
+        canvas=$('#wb-canvas'), twrap=$('#wb-twrap'), tblEl=$('#wb-table'), crumbsEl=$('#wb-crumbs'),
+        note=$('#wb-note'), sqlEl=$('#wb-sql'), titleEl=$('#wb-title'),
+        vbar=$('#wb-vbar'), vtbl=$('#wb-vtbl');
+
+  const valsFor=dim=> dim==='Sales bloc' ? [...new Set(Object.values(BLOC))] : DIMDEF[dim].vals;
+  const curDim=()=> path.length ? childOf[path[path.length-1].dim] : rootDim;
+
+  fill(fdim, DIMS, 'Channel'); fill(fval, valsFor(fdim.value));
+  fdim.addEventListener('change',()=>fill(fval, valsFor(fdim.value)));
+  $('#wb-fadd').addEventListener('click',()=>{
+    filters=filters.filter(f=>f.dim!==fdim.value);       // one predicate per dimension
+    filters.push({dim:fdim.value, value:fval.value}); render();
+  });
+  measEl.replaceChildren(...Object.entries(MEAS).map(([k,m])=>{
+    const b=document.createElement('button'); b.type='button'; b.textContent=m.label; b.dataset.m=k;
+    b.addEventListener('click',()=>{ measure=k; render() }); return b;
+  }));
+  vbar.addEventListener('click',()=>{ view='bar'; render() });
+  vtbl.addEventListener('click',()=>{ view='table'; render() });
+
+  // shelves accept drops; clicking a pill is the keyboard-reachable equivalent
+  const wire=(shelf,onDrop)=>{
+    shelf.addEventListener('dragover',e=>{ e.preventDefault(); shelf.classList.add('dropover') });
+    shelf.addEventListener('dragleave',()=>shelf.classList.remove('dropover'));
+    shelf.addEventListener('drop',e=>{ e.preventDefault(); shelf.classList.remove('dropover');
+      const nm=e.dataTransfer.getData('text/plain'); if(DIMS.includes(nm)) onDrop(nm) });
+  };
+  wire(rowsShelf, nm=>{ rootDim=nm; path=[]; render() });
+  wire(filterShelf, nm=>{ fdim.value=nm; fill(fval, valsFor(nm)) });
+  document.addEventListener('bloc-change',()=>render());
+
+  function condSql(dim,value){
+    if(dim==='Sales bloc'){
+      // the mitigation from the challenges table, applied: resolve membership once,
+      // carry the member list down as an explicit predicate
+      const m=Object.keys(BLOC).filter(c=>BLOC[c]===value);
+      return `country IN (${m.map(x=>`'${x}'`).join(', ')})  <span class="muted">-- bloc '${value}' expanded to its members</span>`;
+    }
+    return `${WCOL[dim]} = '${value}'`;
+  }
+
+  function render(){
+    const dim=curDim(), M=MEAS[measure], child=childOf[dim];
+
+    dimsEl.replaceChildren(...DIMS.map(nm=>{
+      const b=document.createElement('button'); b.type='button'; b.className='dimpill';
+      b.textContent=nm; b.setAttribute('draggable','true');
+      b.setAttribute('aria-pressed', String(nm===dim));
+      b.addEventListener('dragstart',e=>e.dataTransfer.setData('text/plain',nm));
+      b.addEventListener('click',()=>{ rootDim=nm; path=[]; render() });
+      return b;
+    }));
+    const cd=document.createElement('span'); cd.className='curdim'; cd.textContent=dim;
+    const rh=document.createElement('span'); rh.className='hint';
+    rh.textContent = path.length ? `drilled ${path.length} level${path.length>1?'s':''} below ${rootDim}` : 'drop or click a dimension to regroup';
+    rowPill.replaceChildren(cd,rh);
+
+    [...measEl.children].forEach(b=>b.setAttribute('aria-pressed', String(b.dataset.m===measure)));
+    vbar.setAttribute('aria-pressed', String(view==='bar'));
+    vtbl.setAttribute('aria-pressed', String(view==='table'));
+
+    fpills.replaceChildren(...filters.map(f=>{
+      const s=document.createElement('span'); s.className='pill';
+      s.append(document.createTextNode(`${f.dim} = ${f.value}`));
+      const x=document.createElement('button'); x.type='button'; x.textContent='×';
+      x.setAttribute('aria-label',`Remove ${f.dim} filter`);
+      x.addEventListener('click',()=>{ filters=filters.filter(o=>o!==f); render() });
+      s.appendChild(x); return s;
+    }));
+    if(!filters.length){ const h=document.createElement('span'); h.className='hint';
+      h.textContent='none — add one on the right; drilling adds its own, one per level'; fpills.appendChild(h) }
+
+    const rows=FACTS.filter(r=> path.every(p=>WD[p.dim](r)===p.value)
+                             && filters.every(f=>WD[f.dim](r)===f.value));
+    const groups=rollup(rows, WD[dim]).sort((a,b)=>M.val(b)-M.val(a));
+
+    const parts=[]; const mk=(txt,i)=>{ const b=document.createElement('button'); b.type='button';
+      b.textContent=txt; b.addEventListener('click',()=>{ path=path.slice(0,i); render() }); return b };
+    parts.push(mk('All — '+rootDim, 0));
+    path.forEach((p,i)=>{ const s=document.createElement('span'); s.className='sep'; s.textContent='›'; parts.push(s);
+      if(i===path.length-1){ const c=document.createElement('span'); c.className='cur'; c.textContent=p.value; parts.push(c) }
+      else parts.push(mk(p.value,i+1)) });
+    crumbsEl.replaceChildren(...parts);
+
+    titleEl.textContent=`${M.label} by ${dim}`;
+
+    if(view==='bar'){
+      canvas.hidden=false; twrap.hidden=true;
+      bars(canvas, groups.map(g=>({
+        label:g.key, value:Math.max(0,M.val(g)), right:M.fmt(M.val(g)),
+        colour:DEPTH[Math.min(3,path.length)],
+        aria:`${g.key}, ${M.fmt(M.val(g))}.`+(child?` Drill into ${child}.`:''),
+        onClick: child ? ()=>{ path=[...path,{dim,value:g.key}]; render() } : null
+      })), {depth:Math.min(3,path.length)});
+    } else {
+      canvas.hidden=true; twrap.hidden=false;
+      table(tblEl,[{h:dim,f:r=>r.key},{h:'Revenue',n:1,f:r=>exact(r.rev)},
+        {h:'Units',n:1,f:r=>num(r.units)},{h:'Margin %',n:1,f:r=>pctf(r.margin)}], groups);
+    }
+
+    note.innerHTML=`<b>${groups.length}</b> groups &nbsp;·&nbsp; ${num(rows.length)} rows &nbsp;·&nbsp; `
+      + `revenue <b>${exact(sum(rows,r=>r.rev))}</b> &nbsp;·&nbsp; `
+      + (child ? `click a ${view==='bar'?'bar':'row value'} to drill into ${child.toLowerCase()}`
+               : `${dim.toLowerCase()} is a leaf here — records themselves are drill-through, prototype 06`);
+
+    const conds=[...path.map(p=>condSql(p.dim,p.value)), ...filters.map(f=>condSql(f.dim,f.value))];
+    const colLine = dim==='Sales bloc'
+      ? `bloc  <span class="muted">-- user mapping, compiled to CASE country (${Object.keys(BLOC).length} branches)</span>`
+      : WCOL[dim];
+    sqlEl.innerHTML=
+`<b>SELECT</b>   ${colLine},
+         ${M.agg} <b>AS</b> ${M.alias}
+<b>FROM</b>     sales.fact_order_line
+${conds.length ? conds.map((c,i)=>`<b>${i?'AND':'WHERE'}</b>${i?'      ':'    '}${c}`).join('\n') : '<span class="muted">-- no predicates</span>'}
+<b>GROUP BY</b> ${WCOL[dim]}
+<b>ORDER BY</b> ${M.alias} <b>DESC</b>`;
+  }
+  render();
+})();
+
+})();
+</script>
