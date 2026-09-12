@@ -184,3 +184,71 @@ body {
 
 /* ─── Prose-style markdown in AI chat ───────────────────────────────────────── */
 .prose-chat strong { color: #22d3ee; font-weight: 600; }
+
+/* --- Shiki dual-theme code blocks (rehype-pretty-code) --- */
+code[data-theme], code[data-theme] span {
+  color: var(--shiki-light);
+}
+.dark code[data-theme], .dark code[data-theme] span {
+  color: var(--shiki-dark);
+}
+code[data-line-numbers] {
+  counter-reset: line;
+}
+figure[data-rehype-pretty-code-figure] pre {
+  overflow-x: auto;
+  padding: 1rem 0;
+}
+figure[data-rehype-pretty-code-figure] code {
+  display: grid;
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+figure[data-rehype-pretty-code-figure] [data-line] {
+  padding: 0 1rem;
+}
+[data-rehype-pretty-code-title] {
+  padding: 0.5rem 1rem;
+  font-size: 0.8rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  color: rgb(100 116 139);
+  background: rgb(248 250 252);
+  border: 1px solid rgb(0 0 0 / 0.06);
+  border-bottom: none;
+  border-radius: 0.5rem 0.5rem 0 0;
+}
+.dark [data-rehype-pretty-code-title] {
+  color: rgb(148 163 184);
+  background: rgb(2 6 23 / 0.6);
+  border-color: rgb(255 255 255 / 0.1);
+}
+/* Title sits flush on top of its code block */
+[data-rehype-pretty-code-title] + pre {
+  margin-top: 0;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+/* Heading anchors injected by rehype-autolink-headings */
+.prose .heading-anchor {
+  text-decoration: none;
+  color: inherit;
+}
+.prose .heading-anchor:hover {
+  text-decoration: none;
+}
+
+/* Anchor targets must clear the fixed header (approx 76px tall). */
+section[id],
+.prose :is(h1, h2, h3, h4)[id] {
+  scroll-margin-top: 6rem;
+}
+
+/* ─── NYC taxi figure: brush affordance ──────────────────────────────────────
+   d3-brush renders the active box as rect.selection. A soft glow keeps it
+   reading as a deliberate selection rather than an accidental overlay. */
+.nyc-taxi-viz rect.selection {
+  filter: drop-shadow(0 0 6px rgb(34 211 238 / 0.55));
+}
+.nyc-taxi-viz .overlay {
+  cursor: crosshair;
+}

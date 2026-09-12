@@ -9,6 +9,7 @@ import Education from '@/components/Education';
 import Contact from '@/components/Contact';
 import AIChat from '@/components/AIChat';
 import NeuralBackground from '@/components/NeuralBackground';
+import Footer from '@/components/Footer';
 
 export default function Home() {
   return (
@@ -33,11 +34,7 @@ export default function Home() {
       <AIChat />
 
       {/* Footer */}
-      <footer className="relative z-10 py-8 border-t border-white/5 text-center">
-        <p className="text-sm text-slate-500 dark:text-slate-500">
-          © {new Date().getFullYear()} Kasi Vandanapu · Built with Next.js 15, Tailwind CSS & Framer Motion
-        </p>
-      </footer>
+      <Footer />
     </>
   );
 }

@@ -1,0 +1,255 @@
+---
+title: "A Million Rows, 30 Milliseconds a Frame"
+description: "Drag a box over a million taxi trips and three charts re-aggregate before your hand stops moving. Here is what actually runs, what it costs, and when this approach is worth it."
+date: "2026-09-09"
+tags: ["Mosaic", "DuckDB", "Performance", "Data Visualization", "Architecture"]
+draft: false
+---
+
+import NycTaxiRides from '@/components/viz/NycTaxiRides';
+import MosaicFlow from '@/components/viz/MosaicFlow';
+
+**Drag a box on either map.** Watch the other two charts follow, and watch the
+**Last frame** number while you do it.
+
+There is no server behind this page. It's static files, and a million taxi
+trips sitting in a database compiled to WebAssembly inside your browser tab.
+
+<NycTaxiRides />
+
+Every frame of that drag re-aggregated a million rows into three charts, in
+**28–77 ms**. Open *Under the hood* and you can watch it happen.
+
+The rest of this piece is what's going on in there, why it's built that way,
+and where it stops being a good idea.
+
+## Why this is hard
+
+Take the obvious approach: the brush moves, every chart re-runs its query,
+each query scans the table.
+
+The figure does exactly this once — on first load, before any brush exists —
+so we can price it honestly:
+
+| Chart | Time | Rows it got back |
+|---|---|---|
+| Pickups map | 58 ms | 62,114 |
+| Dropoffs map | 105 ms | 78,319 |
+| Hour histogram | 134 ms | 24 |
+
+**Roughly 300 ms for one frame.** Your hand generates pointer moves every
+8–16 ms. You'd fall behind instantly and never catch up, and every frame would
+throw away work the next one redoes.
+
+Worse, it's **O(N)**. Ten million rows means ten times the wait — forever.
+
+## The whole thing, in one picture
+
+<MosaicFlow />
+
+Two phases, and the split between them is the entire trick.
+
+**When your pointer enters a map**, before you press anything,
+[Mosaic](https://idl.uw.edu/mosaic/) builds three index tables. That's the
+expensive part — 62 to 146 ms — and it happens while your hand is still moving.
+
+**When you drag**, nothing touches the million-row table. Each frame reads
+those indexes instead.
+
+## What one frame actually costs
+
+Every mouse move really does generate SQL and run it. Nothing is faked, nothing
+is interpolated. Here is a single frame, pulled from the panel:
+
+| What asked | Where it read | Time | Came back |
+|---|---|---|---|
+| KPI tiles | index | 36 ms | 1 row · **32 B** |
+| Dropoffs map | index | 14 ms | 59,740 rows · **891 KB** |
+| Hour histogram | index | 36 ms | 24 rows · **576 B** |
+
+Three things worth noticing, because each one surprises people:
+
+**The map you're dragging isn't in the list.** A view is filtered by every
+brush *except its own* — otherwise your selection would erase the context you're
+selecting against. Dragging the pickups map costs nothing on the pickups map.
+
+**Cost has almost nothing to do with how much data comes back.** The histogram
+returns 24 rows and costs more than the map returning 59,740. What matters is
+how big the index is, not the answer.
+
+**One of these ships 891 KB per frame and the others ship bytes.** Once the
+database stops being slow, that becomes your next problem. Knowing which one
+you have is the difference between tuning and guessing.
+
+## Four tiles, one query
+
+A question I get immediately: there are four KPI numbers up there — trips,
+distance, fare, party size. Is that four queries?
+
+No. It's one:
+
+```sql
+SELECT count(*)      AS trips,
+       avg(distance) AS distance,
+       avg(fare)     AS fare,
+       avg(riders)   AS riders
+FROM trips
+```
+
+**The unit of work is the component, not the number.** Those four tiles are one
+component, so they're one query. The three charts are three components, so
+they're three queries — even though they share one filter.
+
+Which raises the obvious follow-up: why aren't the three charts merged too?
+
+They can be — Mosaic has a consolidator that waits one animation frame,
+collects whatever queries arrived, and merges the ones with the same table and
+the same grouping. I tested it directly: three separate requests went in, and
+**one statement came out**:
+
+```sql
+SELECT floor("time") AS col0, count(*)      AS col1,
+                              avg("fare")   AS col2,
+                              avg("distance") AS col3
+FROM "trips" GROUP BY col0
+```
+
+Then I ran the same three with a `WHERE` clause on each. Three requests in,
+**three statements out**. The consolidator deliberately gives up when a query
+carries a filter, because it can't safely tell whether the filter refers to a
+column the merge would rewrite.
+
+Every frame of a drag carries a filter — that's what dragging *is*. So
+consolidation helps on first load and does nothing while you interact, which is
+exactly when you'd want it. Three charts, three statements, every frame.
+
+And the charts genuinely are asking different questions anyway: one wants a
+value per pixel, one a value per hour, one a single total. No single result set
+answers all three without shipping raw rows to the browser and aggregating
+there — the thing this whole design exists to avoid.
+
+## What's in the index
+
+Three kinds of thing live in the database, and it's worth separating them.
+
+**The data** — one flat table, built once at load:
+
+```
+trips   time, px, py, dx, dy, distance, fare, riders     1,000,000 rows
+```
+
+**The metadata** — before drawing anything, Mosaic asks what it's dealing with.
+Six small queries, a few milliseconds each: column types, then the min and max
+of every spatial column so it can size the axes.
+
+**The index** — built when you hover. This is the interesting one:
+
+```sql
+CREATE TABLE mosaic.preagg_5e8541db AS
+SELECT floor(time)          AS x1,        -- the histogram's own buckets
+       floor(time) + 1      AS x2,
+       count(*)             AS pre_e87fc4ab,       -- the partial answer
+       floor(0.01305 * (px - 970000))::INT AS active0,  -- your brush, in pixels
+       floor(0.01306 * (py - 188000))::INT AS active1
+FROM trips
+GROUP BY x1, x2, active0, active1
+```
+
+Read it as a grid: **the chart's own buckets crossed with every position your
+brush could be in**, with the count already worked out for each combination.
+
+Dragging then becomes arithmetic, not aggregation — *add up the cells whose
+brush position falls inside the current box*:
+
+```sql
+SELECT x1, x2, sum(pre_e87fc4ab) AS y
+FROM mosaic.preagg_5e8541db
+WHERE active0 BETWEEN 214 AND 287
+  AND active1 BETWEEN 122 AND 190
+GROUP BY x1, x2
+```
+
+No coordinates recomputed. No million rows scanned. Just a range-sum over a
+table that was built for this exact gesture.
+
+## The impact: what you actually buy
+
+**Per-frame cost stops tracking your data size.** This is the whole point. The
+index has ~422,000 cells here against 1,000,000 rows — it is *not* a smaller
+copy of the data. What changed is what its size depends on: the number of
+pixels in the chart times the number of positions the brush can take. Both are
+decisions *you* made in the layout. Neither is a property of the dataset.
+
+Add rows and the index doesn't grow — it just fills in combinations that were
+already possible. So the cost of dragging is a number you chose when you
+decided how wide the chart is.
+
+**You pay for it once per gesture, and you pay it early.** The build happens on
+hover, not on click, which is why you don't feel it.
+
+**And there's no backend.** This page is static files on GitHub Pages. The
+whole thing survives the API behind it being switched off, because there isn't
+one.
+
+## What it costs you
+
+Four constraints, and they're as informative as the benefit.
+
+**Your counts become approximate.** The index bins your brush at pixel
+resolution, so the edge of a selection snaps to the nearest bin. Measured
+against a direct scan under the same filter:
+
+| | From the index | From the table |
+|---|---|---|
+| Trips | 549,766 | 548,931 |
+| Avg distance | 2.44 mi | 2.44 mi |
+| Avg fare | $10.06 | $10.06 |
+
+Averages exact, count **0.15% high**. Invisible in a chart — a pixel was
+already approximate about position. But *"549,766 trips selected"* is a claim
+about the world, and it's now a rounded one. Fine for exploring; think twice
+before someone pastes it into a board deck.
+
+**Only some maths works.** Counts, sums, averages, min and max can be split up
+and recombined. Medians and exact distinct counts cannot — there's no partial
+answer to combine. A surprising amount of dashboard design follows from that
+one constraint.
+
+**Memory.** The index lives beside the data in the same tab. Here that's a
+46 MB dataset plus a comparable index, all in one browser process.
+
+**And it only helps what you route through it.** I learned this the hard way:
+those KPI tiles used to be a query I wrote by hand and fired myself. They
+worked, they looked identical — and they sat outside all of this, scanning a
+million rows every frame while the charts beside them read an index. The fix
+wasn't a faster query. It was declaring them as a component like everything
+else, and letting the machinery find them.
+
+That generalises past this figure. **Every hand-rolled query next to your
+framework is a component that quietly opted out of it.**
+
+## When this is worth it
+
+Reach for it when the data is tens of megabytes, your reader wants to
+interrogate rather than glance, and you have a real reason to avoid a
+backend — a static site, a notebook, a report that has to keep working after
+the service behind it is decommissioned.
+
+Skip it when a precomputed JSON answers every question you care about. That's a
+much smaller download and nobody has to think about any of this.
+
+The trade underneath is simple enough to say in one line: **you pay one large
+cost up front, at a moment the user isn't waiting, to make every subsequent
+question free.** That's a pattern worth knowing whether or not you ever use
+Mosaic — the interesting part isn't the library, it's noticing that during a
+gesture almost nothing changes, and building for the one thing that does.
+
+---
+
+*Architecture per Heer & Moritz,
+[Mosaic: An Architecture for Scalable & Interoperable Data Views](https://idl.cs.washington.edu/files/2024-Mosaic-TVCG.pdf)
+(TVCG 2024). Trip data: the first million yellow-cab trips of 2010, from the
+[Mosaic example datasets](https://idl.uw.edu/mosaic/). Borough boundaries from
+NYC Department of City Planning, reprojected to NY State Plane. Every timing
+here was measured in-browser on a desktop machine — yours will differ, which is
+rather the point of shipping the instrument instead of the claim.*

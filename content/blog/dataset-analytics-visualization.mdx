@@ -1,0 +1,78 @@
+---
+title: "Dataset, Analytics, Visualization: Getting the Order Right"
+description: "Visualization is two different jobs wearing one word — and knowing which one you're doing tells you where it belongs in the pipeline."
+date: "2026-08-18"
+tags: ["Data Engineering", "Analytics", "Visualization"]
+draft: true
+---
+
+## The question that sounds like a preference
+
+"Should we build the dashboard first, or do the analysis first?"
+
+TODO: Open with a concrete moment — a stakeholder asking for a dashboard before
+anyone had validated the underlying table. Ground it in a real pipeline.
+
+## They aren't alternatives, they're layers
+
+- **Dataset** — the substrate. Schema, grain, provenance, freshness, trust.
+- **Analytics** — the derivation. Aggregation, statistics, inference, modeling.
+- **Visualization** — the encoding. Data made visible.
+
+TODO: Argue that the "vs" framing is what causes the misordering. Nobody
+would ask "database vs query vs report" — same category error.
+
+## Visualization is two jobs
+
+This is the core of the piece.
+
+### Exploratory — before analytics
+
+Histograms, missingness maps, scatter matrices, value counts. Ugly, fast,
+disposable. Made **for you**. It answers: *what is this data, actually?*
+
+TODO: Concrete catches — the duplicated join that doubled a row count, the
+"never null" column that was 12% null, the timestamp in the wrong timezone.
+These are found by looking, not by asserting.
+
+### Explanatory — after analytics
+
+The polished chart in the report. Made **for others**. It answers:
+*here is the conclusion, and here is why you should believe it.*
+
+TODO: Note the different design constraints — exploratory optimizes for the
+analyst's speed, explanatory optimizes for the reader's comprehension.
+Using one where you need the other is a real and common mistake.
+
+## The actual order
+
+```
+Dataset → exploratory viz → Analytics → explanatory viz
+```
+
+TODO: Make the point that "we'll do viz later" almost always means skipping
+the exploratory pass — running the aggregation before ever looking at the
+distribution.
+
+## Why the order gets inverted
+
+Attention flows to the visible layer. Dashboards are demoable; fixing the
+grain of a fact table is not.
+
+TODO: The sharpest version of the argument — visualization raises *confidence*
+faster than it raises *correctness*. A polished chart on an untrusted dataset
+launders bad data into a confident decision. That makes it worse than no chart.
+
+## What this looks like in practice
+
+TODO: Practical closing. Ideas:
+- Profiling as a required pipeline stage, not an ad-hoc notebook step
+- Data contracts / schema assertions at ingest
+- Treating the exploratory notebook as throwaway on purpose
+- What earns a chart a place on a dashboard
+
+## Notes to self
+
+- Tukey's EDA tradition is the honest ancestor of this argument — attribute it.
+- Keep it story-first; the taxonomy is the frame, not the point.
+- Target ~1200 words. Cut the taxonomy section hard if it runs long.

@@ -2,6 +2,8 @@
 import { useState, useEffect } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
+import Link from 'next/link';
+import { usePathname, useRouter } from 'next/navigation';
 import ThemeToggle from './ThemeToggle';
 
 const navLinks = [
@@ -14,6 +16,10 @@ const navLinks = [
 ];
 
 export default function NavBar() {
+  const pathname = usePathname();
+  const router = useRouter();
+  const isHome = pathname === '/';
+  const onBlog = pathname.startsWith('/blog');
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('');
   const [scrolled, setScrolled] = useState(false);
@@ -37,8 +43,28 @@ export default function NavBar() {
     return () => observer.disconnect();
   }, []);
 
+  // Cross-page section links land on "/" with a hash. The browser performs its
+  // own hash scroll before the home page has finished laying out, which lands
+  // at the wrong offset, so re-scroll once the target is actually measurable.
+  useEffect(() => {
+    if (!isHome) return;
+    const hash = window.location.hash;
+    if (!hash) return;
+
+    const timer = setTimeout(() => {
+      const el = document.querySelector(hash);
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    }, 150);
+    return () => clearTimeout(timer);
+  }, [isHome, pathname]);
+
   const scrollTo = (href) => {
     setMobileOpen(false);
+    // Off the home page the target section does not exist, so route to it.
+    if (!isHome) {
+      router.push(`/${href}`);
+      return;
+    }
     const el = document.querySelector(href);
     if (el) el.scrollIntoView({ behavior: 'smooth' });
   };
@@ -58,7 +84,9 @@ export default function NavBar() {
         <nav className="max-w-7xl mx-auto px-6 flex items-center justify-between">
           {/* Logo */}
           <motion.button
-            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            onClick={() =>
+              isHome ? window.scrollTo({ top: 0, behavior: 'smooth' }) : router.push('/')
+            }
             className="font-display font-bold text-lg text-slate-900 dark:text-white tracking-tight"
             whileHover={{ scale: 1.02 }}
           >
@@ -92,6 +120,18 @@ export default function NavBar() {
                 </button>
               );
             })}
+
+            {/* Real route, not an in-page scroll target */}
+            <Link
+              href="/blog/"
+              className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-colors duration-150
+                ${onBlog
+                  ? 'text-cyan-400 bg-cyan-400/10 border border-cyan-400/20'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                }`}
+            >
+              Writing
+            </Link>
           </div>
 
           {/* Right side */}
@@ -144,6 +184,17 @@ export default function NavBar() {
                   </button>
                 </li>
               ))}
+              <li>
+                <Link
+                  href="/blog/"
+                  onClick={() => setMobileOpen(false)}
+                  className="block w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium
+                    text-slate-700 dark:text-slate-300 hover:text-cyan-400 hover:bg-cyan-400/5
+                    transition-colors duration-150"
+                >
+                  Writing
+                </Link>
+              </li>
               <li className="pt-2 border-t border-white/5">
                 <a
                   href="/kasi_resume_2026_v2.pdf"

@@ -20,4 +20,17 @@ yarn-debug.log*
 yarn-error.log*
 
 # OS
-Thumbs.db 
+Thumbs.db
+
+# Claude Code local tooling
+/.claude
+
+# DuckDB-WASM engine — copied verbatim out of node_modules by
+# scripts/copy-duckdb-assets.mjs, which `prebuild` runs automatically.
+# 35 MB of build output; the npm dependency is the real source of truth.
+/public/duckdb
+
+# NOTE: public/data/nyc-trips.parquet IS committed on purpose. It is derived
+# (scripts/build-trips-parquet.py) but rebuilding needs Python + duckdb + a
+# 46 MB upstream download that may not outlive this repo. 16 MB is worth
+# keeping the site self-contained.
