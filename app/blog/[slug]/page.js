@@ -70,6 +70,16 @@ export default async function BlogPost({ params }) {
               <time dateTime={post.date}>{formatDate(post.date)}</time>
               <span aria-hidden="true">·</span>
               <span>{post.readingTime}</span>
+              {post.author && (
+                <>
+                  <span aria-hidden="true">·</span>
+                  <span>
+                    Written by{' '}
+                    <span className="text-slate-700 dark:text-slate-300">{post.author}</span>
+                    {post.assistedBy && <>, with {post.assistedBy} as a pair</>}
+                  </span>
+                </>
+              )}
               {post.draft && (
                 <span className="px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
                   draft

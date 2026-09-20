@@ -1,165 +1,141 @@
 ---
 title: "A Million Rows, 30 Milliseconds a Frame"
-description: "Drag a box over a million taxi trips and three charts re-aggregate before your hand stops moving. Here is what actually runs, what it costs, and when this approach is worth it."
-date: "2026-09-09"
-tags: ["Mosaic", "DuckDB", "Performance", "Data Visualization", "Architecture"]
+description: "DuckDB reads Parquet, Mosaic coordinates the views, and every interaction costs three small queries against a cube built while your hand was still moving. An analytics architecture a platform team can build in a week."
+date: "2026-09-19"
+author: "Kasi Vandanapu"
+assistedBy: "Claude Code"
+tags: ["DuckDB", "Parquet", "Mosaic", "Data Platform", "Architecture", "Analytics Engineering"]
 draft: false
 ---
 
 import NycTaxiRides from '@/components/viz/NycTaxiRides';
 import MosaicFlow from '@/components/viz/MosaicFlow';
 
-**Drag a box on either map.** Watch the other two charts follow, and watch the
-**Last frame** number while you do it.
+Most analytics platforms are fast at loading and slow at *thinking*. You wait
+for the dashboard, then every filter you touch makes you wait again.
 
-There is no server behind this page. It's static files, and a million taxi
-trips sitting in a database compiled to WebAssembly inside your browser tab.
+This is a million taxi trips. **Drag a box on either map.** The other charts
+re-aggregate before your hand stops moving — no loading state, no spinner, no
+backend round trip per frame.
 
 <NycTaxiRides />
 
-Every frame of that drag re-aggregated a million rows into three charts, in
-**28–77 ms**. Open *Under the hood* and you can watch it happen.
+Every frame of that drag re-aggregated a million rows into three charts in
+**28–77 ms**. The architecture underneath is three pieces you already trust,
+arranged in an order most teams haven't tried: **Parquet for storage, DuckDB
+for the engine, Mosaic as the coordinator.**
 
-The rest of this piece is what's going on in there, why it's built that way,
-and where it stops being a good idea.
+This piece is about that arrangement — what it costs, where it stops working,
+and why a platform team can build it in a week instead of buying it.
 
-## Why this is hard
+## The problem: the interaction budget
 
-Take the obvious approach: the brush moves, every chart re-runs its query,
-each query scans the table.
+Take the obvious approach. The brush moves, every chart re-runs its query, each
+query scans the table. Priced honestly on first load, before any index exists:
 
-The figure does exactly this once — on first load, before any brush exists —
-so we can price it honestly:
-
-| Chart | Time | Rows it got back |
+| Chart | Time | Rows returned |
 |---|---|---|
 | Pickups map | 58 ms | 62,114 |
 | Dropoffs map | 105 ms | 78,319 |
 | Hour histogram | 134 ms | 24 |
 
-**Roughly 300 ms for one frame.** Your hand generates pointer moves every
-8–16 ms. You'd fall behind instantly and never catch up, and every frame would
-throw away work the next one redoes.
+**About 300 ms for one frame.** Your hand generates pointer events every
+8–16 ms. You fall behind on frame one and never catch up.
 
-Worse, it's **O(N)**. Ten million rows means ten times the wait — forever.
+Worse, it's **O(N)**. Ten million rows means ten times the wait, forever. Every
+"make the dashboard faster" project that ends in more indexes, more caching
+layers, or a bigger warehouse cluster is fighting this exact curve — and paying
+per query to lose.
 
-## The whole thing, in one picture
+The fix is not a faster scan. It is **not scanning during the interaction at
+all.**
+
+## Three pieces
+
+### Parquet: the storage format, not just an export target
+
+Parquet is columnar, compressed, and carries statistics per row group. Two
+properties matter here:
+
+- **Projection pushdown** — a query touching 4 of 30 columns reads 4 columns
+  off disk. Row-oriented storage reads all 30.
+- **Predicate pushdown** — row-group min/max lets the engine skip entire blocks
+  without decompressing them.
+
+A million trips with a dozen columns is **46 MB** as Parquet. The same data as
+CSV is several hundred. That difference is the whole reason this page loads.
+
+### DuckDB: an engine that reads Parquet natively
+
+DuckDB queries Parquet directly — no load step, no ingest job, no copy into a
+proprietary format:
+
+```sql
+SELECT count(*), avg(fare)
+FROM 'trips.parquet'
+WHERE hour BETWEEN 17 AND 19
+```
+
+It's vectorized and columnar end to end, so aggregating a million rows is
+milliseconds on one core. It runs as a library inside your server process, in a
+notebook, or — as on this page — compiled to WebAssembly inside the browser tab.
+
+Same SQL, same engine, three deployment targets. Hold that thought.
+
+### Mosaic: the coordinator
+
+This is the piece most data teams haven't met, and it's the one doing the
+interesting work.
+
+[Mosaic](https://idl.uw.edu/mosaic/) sits between your views and DuckDB. Every
+chart registers as a *client*. Every filter is a *selection*. Nothing queries
+the database directly — the **coordinator** does, on everyone's behalf.
+
+That indirection buys four things no individual chart could arrange for itself:
+
+- It resolves one selection into **one predicate**, shared by every view.
+- It **deduplicates and queues** concurrent queries.
+- It **caches** identical statements.
+- And — the reason we're here — it decides when to **build a cube.**
+
+## The whole system in one picture
 
 <MosaicFlow />
 
 Two phases, and the split between them is the entire trick.
 
-**When your pointer enters a map**, before you press anything,
-[Mosaic](https://idl.uw.edu/mosaic/) builds three index tables. That's the
-expensive part — 62 to 146 ms — and it happens while your hand is still moving.
+## Phase 1: the cube is built on hover
 
-**When you drag**, nothing touches the million-row table. Each frame reads
-those indexes instead.
+**When your pointer enters a chart — before you press anything — Mosaic
+materializes index tables.** One per view that can use one. Here that's three
+`CREATE TABLE` statements, 62 / 92 / 146 ms.
 
-## What one frame actually costs
+You never feel it, because you are still moving your hand toward the thing you
+intend to click.
 
-Every mouse move really does generate SQL and run it. Nothing is faked, nothing
-is interpolated. Here is a single frame, pulled from the panel:
-
-| What asked | Where it read | Time | Came back |
-|---|---|---|---|
-| KPI tiles | index | 36 ms | 1 row · **32 B** |
-| Dropoffs map | index | 14 ms | 59,740 rows · **891 KB** |
-| Hour histogram | index | 36 ms | 24 rows · **576 B** |
-
-Three things worth noticing, because each one surprises people:
-
-**The map you're dragging isn't in the list.** A view is filtered by every
-brush *except its own* — otherwise your selection would erase the context you're
-selecting against. Dragging the pickups map costs nothing on the pickups map.
-
-**Cost has almost nothing to do with how much data comes back.** The histogram
-returns 24 rows and costs more than the map returning 59,740. What matters is
-how big the index is, not the answer.
-
-**One of these ships 891 KB per frame and the others ship bytes.** Once the
-database stops being slow, that becomes your next problem. Knowing which one
-you have is the difference between tuning and guessing.
-
-## Four tiles, one query
-
-A question I get immediately: there are four KPI numbers up there — trips,
-distance, fare, party size. Is that four queries?
-
-No. It's one:
-
-```sql
-SELECT count(*)      AS trips,
-       avg(distance) AS distance,
-       avg(fare)     AS fare,
-       avg(riders)   AS riders
-FROM trips
-```
-
-**The unit of work is the component, not the number.** Those four tiles are one
-component, so they're one query. The three charts are three components, so
-they're three queries — even though they share one filter.
-
-Which raises the obvious follow-up: why aren't the three charts merged too?
-
-They can be — Mosaic has a consolidator that waits one animation frame,
-collects whatever queries arrived, and merges the ones with the same table and
-the same grouping. I tested it directly: three separate requests went in, and
-**one statement came out**:
-
-```sql
-SELECT floor("time") AS col0, count(*)      AS col1,
-                              avg("fare")   AS col2,
-                              avg("distance") AS col3
-FROM "trips" GROUP BY col0
-```
-
-Then I ran the same three with a `WHERE` clause on each. Three requests in,
-**three statements out**. The consolidator deliberately gives up when a query
-carries a filter, because it can't safely tell whether the filter refers to a
-column the merge would rewrite.
-
-Every frame of a drag carries a filter — that's what dragging *is*. So
-consolidation helps on first load and does nothing while you interact, which is
-exactly when you'd want it. Three charts, three statements, every frame.
-
-And the charts genuinely are asking different questions anyway: one wants a
-value per pixel, one a value per hour, one a single total. No single result set
-answers all three without shipping raw rows to the browser and aggregating
-there — the thing this whole design exists to avoid.
-
-## What's in the index
-
-Three kinds of thing live in the database, and it's worth separating them.
-
-**The data** — one flat table, built once at load:
-
-```
-trips   time, px, py, dx, dy, distance, fare, riders     1,000,000 rows
-```
-
-**The metadata** — before drawing anything, Mosaic asks what it's dealing with.
-Six small queries, a few milliseconds each: column types, then the min and max
-of every spatial column so it can size the axes.
-
-**The index** — built when you hover. This is the interesting one:
+Here is what one of those tables actually is:
 
 ```sql
 CREATE TABLE mosaic.preagg_5e8541db AS
-SELECT floor(time)          AS x1,        -- the histogram's own buckets
-       floor(time) + 1      AS x2,
-       count(*)             AS pre_e87fc4ab,       -- the partial answer
-       floor(0.01305 * (px - 970000))::INT AS active0,  -- your brush, in pixels
+SELECT floor(time)     AS x1,               -- the histogram's own buckets
+       floor(time) + 1 AS x2,
+       count(*)        AS pre_e87fc4ab,     -- the partial answer
+       floor(0.01305 * (px - 970000))::INT AS active0,  -- brush position, in pixels
        floor(0.01306 * (py - 188000))::INT AS active1
 FROM trips
 GROUP BY x1, x2, active0, active1
 ```
 
-Read it as a grid: **the chart's own buckets crossed with every position your
-brush could be in**, with the count already worked out for each combination.
+Read it as a grid: **the chart's own buckets crossed with every position the
+brush could possibly take**, with the answer already computed for each cell.
 
-Dragging then becomes arithmetic, not aggregation — *add up the cells whose
-brush position falls inside the current box*:
+If you've built OLAP cubes, this will feel familiar — because it is one. The
+difference is that nobody designed it. Mosaic derived the cube's shape from the
+chart's encoding and the interactor's geometry, then built it during a gesture
+the user doesn't perceive as waiting.
+
+Dragging then becomes **arithmetic, not aggregation** — sum the cells whose
+brush position falls inside the current box:
 
 ```sql
 SELECT x1, x2, sum(pre_e87fc4ab) AS y
@@ -169,87 +145,196 @@ WHERE active0 BETWEEN 214 AND 287
 GROUP BY x1, x2
 ```
 
-No coordinates recomputed. No million rows scanned. Just a range-sum over a
-table that was built for this exact gesture.
+No coordinates recomputed. No million rows scanned. A range-sum over a table
+built for this exact gesture.
 
-## The impact: what you actually buy
+## Phase 2: three queries per frame
 
-**Per-frame cost stops tracking your data size.** This is the whole point. The
-index has ~422,000 cells here against 1,000,000 rows — it is *not* a smaller
-copy of the data. What changed is what its size depends on: the number of
-pixels in the chart times the number of positions the brush can take. Both are
-decisions *you* made in the layout. Neither is a property of the dataset.
+The figure has **four views**: the pickups map, the dropoffs map, the hour
+histogram, and the KPI tiles. While you drag the pickups map, **three queries
+run per frame:**
 
-Add rows and the index doesn't grow — it just fills in combinations that were
-already possible. So the cost of dragging is a number you chose when you
-decided how wide the chart is.
+| View | Reads | Time | Returns |
+|---|---|---|---|
+| KPI tiles | cube | 36 ms | 1 row · **32 B** |
+| Dropoffs map | cube | 14 ms | 59,740 rows · **891 KB** |
+| Hour histogram | cube | 36 ms | 24 rows · **576 B** |
 
-**You pay for it once per gesture, and you pay it early.** The build happens on
-hover, not on click, which is why you don't feel it.
+Three things here surprise people, and each is a design lesson.
 
-**And there's no backend.** This page is static files on GitHub Pages. The
-whole thing survives the API behind it being switched off, because there isn't
-one.
+**The map you're dragging isn't in the list.** A view is filtered by every
+selection *except its own* — otherwise your brush would erase the context you
+are selecting against. Dragging the pickups map costs nothing on the pickups
+map.
 
-## What it costs you
+**Four tiles is one query, not four.** The unit of work is the *component*, not
+the number on screen:
 
-Four constraints, and they're as informative as the benefit.
+```sql
+SELECT count(*) AS trips, avg(distance) AS distance,
+       avg(fare) AS fare,  avg(riders)   AS riders
+FROM trips
+```
 
-**Your counts become approximate.** The index bins your brush at pixel
-resolution, so the edge of a selection snaps to the nearest bin. Measured
-against a direct scan under the same filter:
+The three charts stay three queries, though, because they ask genuinely
+different questions — different `GROUP BY`, different measures, 24 buckets vs
+59,740 pixels vs 1 row. No single result set answers all three without shipping
+raw rows to the client and aggregating there, which is the design this exists
+to avoid. **Three queries is correct.** What changed is which table they read.
 
-| | From the index | From the table |
+**Cost barely tracks result size.** The histogram returns 24 rows and costs more
+than the map returning 59,740. What matters is the size of the cube, not the
+size of the answer.
+
+## Only the filtered data crosses the wire
+
+Look at the bytes column again: **32 B, 891 KB, 576 B.**
+
+That is the enterprise headline. The engine sits next to the data — 46 MB of
+Parquet — and what leaves it is the *aggregate*, sized by the chart's
+resolution, not the table's row count. The million rows never move.
+
+This inverts how most BI tools behave, where the client pulls a result set and
+does the last mile of work itself, and payload grows with your data.
+
+Notice too that the figure narrates itself: a status line reporting whether data
+came from cache or network, per-query timings, the SQL behind every box.
+**Hint text is not decoration.** When a number moves and the user can see why,
+they trust it; when it moves silently, they open a ticket. It's the cheapest
+trust feature you will ever ship, and the first one cut from most internal
+tools.
+
+## Same architecture, two deployments
+
+This page fetches Parquet from a CDN, caches it in the browser, and runs
+DuckDB-WASM in the tab. Zero backend. That's one deployment of the pattern, and
+it's the right one for a surprising amount of internal tooling.
+
+The architecture doesn't change when the data outgrows a tab. Mosaic ships three
+connectors:
+
+| Connector | DuckDB runs | Fits |
 |---|---|---|
-| Trips | 549,766 | 548,931 |
-| Avg distance | 2.44 mi | 2.44 mi |
-| Avg fare | $10.06 | $10.06 |
+| `wasmConnector` | in the browser tab | ≤ ~100 MB · internal tools, embedded analytics, static sites |
+| `socketConnector` | a DuckDB server process | GB-scale · shared, governed, multi-tenant |
+| `restConnector` | behind your own HTTP API | when you need auth, row-level security, audit |
 
-Averages exact, count **0.15% high**. Invisible in a chart — a pixel was
-already approximate about position. But *"549,766 trips selected"* is a claim
-about the world, and it's now a rounded one. Fine for exploring; think twice
-before someone pastes it into a board deck.
+**Your charts, selections and cubes don't know which one you picked.** Views
+talk to the coordinator; the coordinator talks to a connector. Swapping
+transports is a line of configuration, not a rewrite.
 
-**Only some maths works.** Counts, sums, averages, min and max can be split up
-and recombined. Medians and exact distinct counts cannot — there's no partial
-answer to combine. A surprising amount of dashboard design follows from that
-one constraint.
+So a team can prototype entirely in-browser against a sampled Parquet extract,
+then move the same code to a server-side DuckDB reading from object storage when
+governance or volume demands it. The cube strategy, the three-queries-per-frame
+shape, and the payload sizes are identical. Only the hop changes.
 
-**Memory.** The index lives beside the data in the same tab. Here that's a
-46 MB dataset plus a comparable index, all in one browser process.
+## The enterprise shape: snapshot, then serve
 
-**And it only helps what you route through it.** I learned this the hard way:
-those KPI tiles used to be a query I wrote by hand and fired myself. They
-worked, they looked identical — and they sat outside all of this, scanning a
-million rows every frame while the charts beside them read an index. The fix
-wasn't a faster query. It was declaring them as a component like everything
-else, and letting the machinery find them.
+Most enterprise analytics is **not** asking questions of live transactional
+state. It's asking questions of a period that has closed — yesterday, last week,
+last quarter. That distinction is where this architecture earns its keep.
 
-That generalises past this figure. **Every hand-rolled query next to your
-framework is a component that quietly opted out of it.**
+```
+Postgres / Oracle / Snowflake        ← system of record, stays authoritative
+        │
+        │  scheduled snapshot  (nightly · weekly · quarterly)
+        ▼
+    Parquet on object storage        ← immutable, partitioned, cheap
+        │
+        ▼
+  DuckDB + Mosaic coordinator        ← every interaction served from here
+```
 
-## When this is worth it
+What that buys:
 
-Reach for it when the data is tens of megabytes, your reader wants to
-interrogate rather than glance, and you have a real reason to avoid a
-backend — a static site, a notebook, a report that has to keep working after
-the service behind it is decommissioned.
+- **The OLTP database stops absorbing analytical load.** Every drag on a
+  dashboard is a query your transactional system never sees.
+- **Snapshots are immutable, so results are reproducible.** "The Q3 number
+  changed since Tuesday" stops being a conversation.
+- **Cost becomes a schedule, not a meter.** You pay for one extract on a cadence
+  you chose, instead of per-query against a warehouse billing by the second
+  while a user fiddles with a filter.
+- **Partitioning is just file layout** — `year=/month=/region=` directories, and
+  DuckDB prunes them without a metastore.
 
-Skip it when a precomputed JSON answers every question you care about. That's a
-much smaller download and nobody has to think about any of this.
+Match the cadence to the question. Finance reporting: quarterly. Ops review:
+weekly. Sales pipeline: nightly. The interaction budget is the same 30 ms in
+every case, because a snapshot's freshness has nothing to do with a cube's
+speed.
 
-The trade underneath is simple enough to say in one line: **you pay one large
-cost up front, at a moment the user isn't waiting, to make every subsequent
-question free.** That's a pattern worth knowing whether or not you ever use
-Mosaic — the interesting part isn't the library, it's noticing that during a
-gesture almost nothing changes, and building for the one thing that does.
+## Why a team should build this
+
+For small and mid-sized use cases, the honest comparison isn't DuckDB-and-Mosaic
+versus a better dashboard. It's versus a platform licence, a semantic layer you
+don't control, and a roadmap you can't influence.
+
+What building it yourself gets you:
+
+- **The visual grammar is yours.** Your charts, your interactions, your empty
+  states, your copy — not the six widgets a vendor exposes.
+- **Domain logic lives in SQL you own** — your definition of an active customer,
+  your fiscal calendar, your exclusions. Not in someone's modelling UI.
+- **It embeds where the work happens.** Inside your internal app, next to the
+  record the user is actually looking at, not behind a separate login.
+- **No per-seat cost**, so analysis goes in front of everyone who'd benefit
+  rather than everyone who can justify a licence.
+- **It's inspectable.** Every query is SQL you can read, log, test and defend in
+  a review.
+
+The reason this is now a week of work rather than a quarter is that the hard
+parts — the engine, the format, the coordination — are solved and free. What's
+left is the part only you can do: deciding what your users should be able to ask.
+
+## When to reach for this, and when not to
+
+Size it in **rows and columns**, not megabytes.
+
+| Rows | Do this instead |
+|---|---|
+| Under ~100 K | Ship JSON, filter it in JavaScript. No engine, no cube, no point. |
+| **100 K – 10 M** | **This architecture, in the browser.** |
+| Over ~10 M | Same code, `socketConnector`, DuckDB on a server. |
+
+Above 10 M it isn't the queries that break — it's the load. Nobody should pull
+that into a tab before seeing anything.
+
+Two rules worth keeping:
+
+- **Rows are cheap, columns are not.** More rows cost load time and memory but
+  *not* per-frame latency — the cube is sized by chart resolution, not row
+  count. More projected columns cost you everywhere at once.
+- **Only the columns your charts touch count.** Parquet reads what you select,
+  so a 200-column fact table where the dashboard uses twelve behaves like a
+  twelve-column table.
+
+The trade underneath fits in one line: **pay one large cost up front, at a moment
+the user isn't waiting, to make every subsequent question free.**
+
+## What I'm building next
+
+The snapshot cadence above is currently a human decision — someone chooses
+nightly or weekly and writes a cron entry. That's the obvious place for an agent.
+
+I'm exploring a planner that looks at a question and decides: **is this ad hoc,
+or is it becoming a workload?**
+
+A one-off exploration runs against the source and costs what it costs. But if
+the same question is asked forty times a week, the system should recognise that
+pattern and consider turning it into a scheduled extract — with its own Parquet
+snapshot and potentially its own pre-aggregated representation.
+
+The agent wouldn't execute that optimisation. It would **detect the pattern,
+propose the configuration, estimate the cost/benefit, and justify the decision
+against a defined budget** — leaving the commit to a human.
+
+Cost-aware query planning, one level above the optimizer. That's the next post.
 
 ---
 
-*Architecture per Heer & Moritz,
+*Coordinator architecture per Heer & Moritz,
 [Mosaic: An Architecture for Scalable & Interoperable Data Views](https://idl.cs.washington.edu/files/2024-Mosaic-TVCG.pdf)
-(TVCG 2024). Trip data: the first million yellow-cab trips of 2010, from the
+(TVCG 2024). Data: the first million yellow-cab trips of 2010, from the
 [Mosaic example datasets](https://idl.uw.edu/mosaic/). Borough boundaries from
-NYC Department of City Planning, reprojected to NY State Plane. Every timing
-here was measured in-browser on a desktop machine — yours will differ, which is
-rather the point of shipping the instrument instead of the claim.*
+NYC Department of City Planning, reprojected to NY State Plane. Every timing here
+was measured in-browser on a desktop machine — yours will differ, which is rather
+the point of shipping the instrument instead of the claim.*
