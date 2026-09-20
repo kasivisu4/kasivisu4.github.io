@@ -10,13 +10,14 @@
       <title>A Million Rows, 30 Milliseconds a Frame</title>
       <link>https://kasivisu4.github.io/blog/how-mosaic-scales-interactive-aggregation/</link>
       <guid isPermaLink="true">https://kasivisu4.github.io/blog/how-mosaic-scales-interactive-aggregation/</guid>
-      <description>Drag a box over a million taxi trips and three charts re-aggregate before your hand stops moving. Here is what actually runs, what it costs, and when this approach is worth it.</description>
-      <pubDate>Wed, 09 Sep 2026 00:00:00 GMT</pubDate>
-      <category>Mosaic</category>
+      <description>DuckDB reads Parquet, Mosaic coordinates the views, and every interaction costs three small queries against a cube built while your hand was still moving. An analytics architecture a platform team can build in a week.</description>
+      <pubDate>Sat, 19 Sep 2026 00:00:00 GMT</pubDate>
       <category>DuckDB</category>
-      <category>Performance</category>
-      <category>Data Visualization</category>
+      <category>Parquet</category>
+      <category>Mosaic</category>
+      <category>Data Platform</category>
       <category>Architecture</category>
+      <category>Analytics Engineering</category>
     </item>
   </channel>
 </rss>
