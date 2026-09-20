@@ -40,6 +40,11 @@ const colorMap = {
     pill: 'bg-yellow-50 dark:bg-yellow-400/20 text-yellow-700 dark:text-yellow-200 border border-yellow-200 dark:border-yellow-400/40 hover:bg-yellow-100 dark:hover:bg-yellow-400/30 hover:border-yellow-300 dark:hover:border-yellow-400/60',
     header: 'border-yellow-400/30',
   },
+  rose: {
+    label: 'text-rose-500 dark:text-rose-400',
+    pill: 'bg-rose-50 dark:bg-rose-400/20 text-rose-700 dark:text-rose-200 border border-rose-200 dark:border-rose-400/40 hover:bg-rose-100 dark:hover:bg-rose-400/30 hover:border-rose-300 dark:hover:border-rose-400/60',
+    header: 'border-rose-400/30',
+  },
 };
 
 function SkillGroup({ group, index }) {

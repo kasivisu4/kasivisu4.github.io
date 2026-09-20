@@ -2,75 +2,18 @@
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { Github, Linkedin, Mail, Download, ArrowDown, Zap } from 'lucide-react';
-import { personalInfo, coreProfiles } from '@/lib/data';
+import { personalInfo, buildPillars, stats } from '@/lib/data';
 
 // Rotating typewriter words
 const WORDS = ['Agentic AI', 'FastAPI', 'LangGraph', 'LLM Systems', 'Data Platforms'];
 
-// SVG progress ring for a core skill
-function SkillRing({ name, pct, size = 92, stroke = 6, delay = 0 }) {
-  const r = (size - stroke * 2) / 2;
-  const circ = 2 * Math.PI * r;
-  const dash = (pct / 100) * circ;
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.8 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ delay, duration: 0.5, type: 'spring', bounce: 0.3 }}
-      className="flex flex-col items-center gap-1"
-    >
-      <div className="relative" style={{ width: size, height: size }}>
-        <svg width={size} height={size} className="-rotate-90">
-          {/* Track */}
-          <circle
-            cx={size / 2} cy={size / 2} r={r}
-            fill="none"
-            strokeWidth={stroke}
-            className="stroke-slate-200 dark:stroke-slate-700/60"
-          />
-          {/* Progress */}
-          <motion.circle
-            cx={size / 2} cy={size / 2} r={r}
-            fill="none"
-            strokeWidth={stroke}
-            strokeLinecap="round"
-            className="stroke-cyan-400"
-            initial={{ strokeDasharray: `0 ${circ}` }}
-            animate={{ strokeDasharray: `${dash} ${circ}` }}
-            transition={{ delay: delay + 0.3, duration: 1.2, ease: 'easeOut' }}
-          />
-        </svg>
-        <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-xs font-bold text-slate-700 dark:text-slate-200">{pct}%</span>
-        </div>
-      </div>
-      <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400 text-center leading-tight max-w-[96px]">
-        {name}
-      </span>
-    </motion.div>
-  );
-}
-
-// Floating tech badge
-function TechBadge({ label, color = 'cyan', delay = 0 }) {
-  const colors = {
-    cyan: 'border-cyan-400/30 bg-cyan-400/5 text-cyan-400',
-    violet: 'border-violet-400/30 bg-violet-400/5 text-violet-400',
-    blue: 'border-blue-400/30 bg-blue-400/5 text-blue-400',
-    emerald: 'border-emerald-400/30 bg-emerald-400/5 text-emerald-400',
-  };
-  return (
-    <motion.span
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay, duration: 0.4 }}
-      className={`tag-pill border text-[11px] font-mono ${colors[color] || colors.cyan}`}
-    >
-      {label}
-    </motion.span>
-  );
-}
+// Left-border accent per pillar. Literal class strings so Tailwind keeps them.
+const PILLAR_ACCENT = {
+  cyan: 'border-cyan-400/50',
+  violet: 'border-violet-400/50',
+  emerald: 'border-emerald-400/50',
+  rose: 'border-rose-400/50',
+};
 
 export default function Hero() {
   const [wordIndex, setWordIndex] = useState(0);
@@ -145,30 +88,36 @@ export default function Hero() {
             </h2>
           </motion.div>
 
+          {/* Role line — the positioning statement, verbatim */}
+          <motion.p
+            variants={fadeUp}
+            className="font-mono text-[13px] sm:text-sm text-slate-500 dark:text-slate-400 tracking-tight"
+          >
+            {personalInfo.title}
+            <span className="text-cyan-500/60 dark:text-cyan-400/60"> · </span>
+            {personalInfo.subtitle}
+          </motion.p>
+
           {/* Summary */}
           <motion.p
             variants={fadeUp}
             className="text-base sm:text-lg text-slate-600 dark:text-slate-400 leading-relaxed max-w-xl"
           >
-            Senior Python Developer & Data Engineer with{' '}
+            Senior AI &amp; Backend Engineer with{' '}
             <span className="text-slate-900 dark:text-slate-100 font-medium">5+ years</span>{' '}
-            building scalable, cloud-native AI platforms. Expert in{' '}
-            <span className="text-cyan-500 dark:text-cyan-400 font-medium">Python · FastAPI · LLMs · LangGraph</span>.
-            Proven track record optimizing ETL pipelines by{' '}
-            <span className="text-slate-900 dark:text-slate-100 font-medium">60%</span> and cutting inference costs by{' '}
-            <span className="text-slate-900 dark:text-slate-100 font-medium">50%</span>.
+            building production data and AI systems in Python. I work across{' '}
+            <span className="text-cyan-500 dark:text-cyan-400 font-medium">
+              LLM applications, agentic workflows, data engineering
+            </span>{' '}
+            and high-performance backend services — with a focus on making systems{' '}
+            <span className="text-slate-900 dark:text-slate-100 font-medium">
+              faster, cheaper, and easier to evaluate
+            </span>.
           </motion.p>
 
-          {/* Tag cloud */}
-          <motion.div variants={fadeUp} className="flex flex-wrap gap-2">
-            <TechBadge label="LangGraph" color="cyan" delay={0.6} />
-            <TechBadge label="LangChain" color="cyan" delay={0.65} />
-            <TechBadge label="FastAPI" color="violet" delay={0.7} />
-            <TechBadge label="PySpark" color="blue" delay={0.75} />
-            <TechBadge label="AWS · GCP" color="emerald" delay={0.8} />
-            <TechBadge label="MongoDB" color="violet" delay={0.85} />
-            <TechBadge label="Text2SQL" color="cyan" delay={0.9} />
-          </motion.div>
+          {/* No tag cloud here — every tag but one was already in the
+              What I Build panel beside it, organised by purpose rather than
+              listed raw. */}
 
           {/* CTAs */}
           <motion.div variants={fadeUp} className="flex flex-wrap gap-3 pt-2">
@@ -228,36 +177,53 @@ export default function Hero() {
           </motion.div>
         </motion.div>
 
-        {/* ── Right: Skill Rings ── */}
+        {/* ── Right: What I Build ── */}
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.8, delay: 0.3, ease: 'easeOut' }}
           className="hidden lg:flex flex-col items-center"
         >
-            <div className="glass-card p-9 space-y-7 glow-cyan min-w-[400px]">
-            <div className="text-center">
-              <p className="section-label mb-1">Core Proficiency</p>
-                <p className="text-sm text-slate-500 dark:text-slate-500">Self-assessed expertise levels</p>
+          <div className="glass-card p-8 space-y-6 glow-cyan min-w-[400px] max-w-[440px]">
+            <div>
+              <p className="section-label mb-1">What I Build</p>
+              <p className="text-sm text-slate-500 dark:text-slate-500">
+                Four areas, and the systems behind them.
+              </p>
             </div>
-              <div className="grid grid-cols-3 gap-7 justify-items-center">
-              {coreProfiles.map((skill, i) => (
-                <SkillRing key={skill.name} name={skill.name} pct={skill.pct} delay={0.5 + i * 0.12} />
+
+            <div className="space-y-4">
+              {buildPillars.map((pillar, i) => (
+                <motion.div
+                  key={pillar.label}
+                  initial={{ opacity: 0, x: 12 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.45, delay: 0.5 + i * 0.1 }}
+                  className={`pl-3 border-l-2 ${PILLAR_ACCENT[pillar.color] ?? PILLAR_ACCENT.cyan}`}
+                >
+                  <p className="font-display text-[13px] font-semibold text-slate-800 dark:text-slate-100 tracking-wide">
+                    {pillar.label}
+                  </p>
+                  <p className="mt-1 text-[11.5px] leading-relaxed text-slate-500 dark:text-slate-400">
+                    {pillar.items}
+                  </p>
+                </motion.div>
               ))}
             </div>
-            {/* Impact stats */}
-            <div className="grid grid-cols-2 gap-3 pt-2 border-t border-white/5">
-              {[
-                { v: '5+', l: 'Years in Python' },
-                { v: '60%', l: 'Pipeline speedup' },
-                { v: '50%', l: 'Inference cost cut' },
-                { v: '4+', l: 'Enterprise clients' },
-              ].map(({ v, l }) => (
-                <div key={l} className="text-center">
-                  <div className="font-display text-xl font-bold gradient-text-cyan">{v}</div>
-                  <div className="text-[10px] text-slate-500 dark:text-slate-500 mt-0.5">{l}</div>
-                </div>
-              ))}
+
+            {/* Selected impact */}
+            <div className="pt-4 border-t border-white/5">
+              <p className="section-label mb-3">Selected Impact</p>
+              <div className="grid grid-cols-2 gap-3">
+                {stats.map(({ value, label }) => (
+                  <div key={label}>
+                    <div className="font-display text-xl font-bold gradient-text-cyan">{value}</div>
+                    <div className="text-[10px] text-slate-500 dark:text-slate-500 mt-0.5 leading-snug">
+                      {label}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </motion.div>

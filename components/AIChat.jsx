@@ -2,28 +2,35 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MessageSquare, X, Send, Bot, User, Sparkles } from 'lucide-react';
-import { chatResponses, chatFallback } from '@/lib/data';
-import { warmupWebLLM, streamChatCompletion, WEBLLM_MODEL } from '@/lib/webllm';
-import {
-  warmupTransformers,
-  generateTransformersCompletion,
-  TRANSFORMERS_DEFAULT_MODEL,
-  TRANSFORMERS_MODEL_OPTIONS,
-} from '@/lib/transformersRuntime';
+import { answer, REMOTE_ENABLED } from '@/lib/chatEngine';
 
-const RUNTIME_OPTIONS = [
-  { id: 'webllm', label: 'WebLLM' },
-  { id: 'transformers', label: 'Transformers.js' },
-];
-
-// ── Lightweight markdown renderer for bold (**text**) in chat responses
+// ── Lightweight markdown renderer: **bold** and [label](href) links
 function ChatMarkdown({ text }) {
-  const parts = text.split(/(\*\*[^*]+\*\*)/g);
+  const parts = text.split(/(\*\*[^*]+\*\*|\[[^\]]+\]\([^)]+\))/g);
   return (
     <span>
       {parts.map((part, i) => {
-        if (part.startsWith('**') && part.endsWith('**')) {
-          return <strong key={i} className="font-semibold text-cyan-400">{part.slice(2, -2)}</strong>;
+        const bold = part.startsWith('**') && part.endsWith('**');
+        const inner = bold ? part.slice(2, -2) : part;
+
+        // A link may be wrapped in bold (**[label](href)**), so check the
+        // unwrapped text too rather than letting the bold branch swallow it.
+        const link = /^\[([^\]]+)\]\(([^)]+)\)$/.exec(inner);
+        if (link) {
+          return (
+            <a
+              key={i}
+              href={link[2]}
+              className={`text-cyan-400 underline underline-offset-2 hover:text-cyan-300 ${
+                bold ? 'font-semibold' : ''
+              }`}
+            >
+              {link[1]}
+            </a>
+          );
+        }
+        if (bold) {
+          return <strong key={i} className="font-semibold text-cyan-400">{inner}</strong>;
         }
         return part;
       })}
@@ -31,19 +38,10 @@ function ChatMarkdown({ text }) {
   );
 }
 
-// ── Match a user query to the best response
-function getResponse(query) {
-  const lower = query.toLowerCase();
-  for (const { patterns, response } of chatResponses) {
-    if (patterns.some((p) => lower.includes(p))) return response;
-  }
-  return chatFallback;
-}
-
 // ── Suggested starter questions
 const SUGGESTIONS = [
   'Tell me about your LangGraph work.',
-  'Tell me about his FastAPI experience.',
+  'How does the million-row demo stay fast?',
   'What data pipelines has he worked on?',
   'What are his top skills?',
 ];
@@ -114,15 +112,12 @@ function TypingIndicator() {
 
 export default function AIChat() {
   const [open, setOpen] = useState(false);
-  const [runtime, setRuntime] = useState('transformers');
-  const [runtimeModel, setRuntimeModel] = useState(TRANSFORMERS_DEFAULT_MODEL);
-  const [llmStatus, setLlmStatus] = useState('idle');
-  const [llmProgress, setLlmProgress] = useState('');
   const [messages, setMessages] = useState([
     {
       id: 0,
       role: 'bot',
-      content: "Hi! I'm an on-device AI assistant for Kasi's portfolio. Ask me anything about his experience, projects, or skills — or try one of the suggestions below!",
+      content:
+        "Hi! I answer from Kasi's portfolio — his experience, projects, skills, and his writing on data platform architecture. Ask away, or try a suggestion below.",
       streaming: false,
     },
   ]);
@@ -135,38 +130,6 @@ export default function AIChat() {
     messagesRef.current = messages;
   }, [messages]);
 
-  useEffect(() => {
-    try {
-      const savedRuntime = localStorage.getItem('portfolio_llm_runtime');
-      const savedModel = localStorage.getItem('portfolio_transformers_model');
-
-      if (savedRuntime && RUNTIME_OPTIONS.some((r) => r.id === savedRuntime)) {
-        setRuntime(savedRuntime);
-      }
-      if (savedModel) {
-        setRuntimeModel(savedModel);
-      }
-    } catch {
-      // Ignore storage errors.
-    }
-  }, []);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem('portfolio_llm_runtime', runtime);
-    } catch {
-      // Ignore storage errors.
-    }
-  }, [runtime]);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem('portfolio_transformers_model', runtimeModel);
-    } catch {
-      // Ignore storage errors.
-    }
-  }, [runtimeModel]);
-
   const scrollToBottom = useCallback(() => {
     endRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, []);
@@ -175,43 +138,6 @@ export default function AIChat() {
   useEffect(() => {
     scrollToBottom();
   }, [messages, thinking, scrollToBottom]);
-
-  // Warm up selected runtime when chat opens so first response is faster.
-  useEffect(() => {
-    if (!open || llmStatus === 'ready' || llmStatus === 'loading') return;
-
-    let active = true;
-    setLlmStatus('loading');
-    setLlmProgress('Loading model...');
-
-    const onProgress = (report) => {
-      if (!active) return;
-      const pct = typeof report?.progress === 'number' ? `${Math.round(report.progress * 100)}%` : '';
-      setLlmProgress([report?.text || report?.status, pct].filter(Boolean).join(' '));
-    };
-
-    const warmup =
-      runtime === 'transformers'
-        ? warmupTransformers(runtimeModel, onProgress)
-        : warmupWebLLM(onProgress);
-
-    warmup
-      .then(() => {
-        if (!active) return;
-        setLlmStatus('ready');
-        setLlmProgress('Model ready');
-      })
-      .catch((error) => {
-        console.error('LLM warmup failed:', error);
-        if (!active) return;
-        setLlmStatus('error');
-        setLlmProgress('Model unavailable, using fallback responses');
-      });
-
-    return () => {
-      active = false;
-    };
-  }, [open, llmStatus, runtime, runtimeModel]);
 
   const sendMessage = async (text) => {
     const q = text.trim();
@@ -226,7 +152,7 @@ export default function AIChat() {
     setMessages((m) => [...m, { id: botId, role: 'bot', content: '', streaming: true }]);
 
     try {
-      const prior = [...messagesRef.current, userMsg]
+      const history = [...messagesRef.current, userMsg]
         .filter((m) => m.id !== 0)
         .slice(-6)
         .map((m) => ({
@@ -234,69 +160,21 @@ export default function AIChat() {
           content: m.content,
         }));
 
-      const llmMessages = [
-        {
-          role: 'system',
-          content:
-            "You are Kasi's portfolio assistant. Answer briefly, factually, and professionally. If a question is unrelated to Kasi's profile, politely steer back to his experience, skills, and projects.",
-        },
-        ...prior,
-      ];
+      // Resolves locally unless a proxy endpoint is configured; either way this
+      // never throws and always returns usable text.
+      const { text } = await answer(q, history);
 
-      if (llmStatus !== 'ready') {
-        setLlmStatus('loading');
-        const onProgress = (report) => {
-          const pct = typeof report?.progress === 'number' ? `${Math.round(report.progress * 100)}%` : '';
-          setLlmProgress([report?.text || report?.status, pct].filter(Boolean).join(' '));
-        };
-        if (runtime === 'transformers') {
-          await warmupTransformers(runtimeModel, onProgress);
-        } else {
-          await warmupWebLLM(onProgress);
-        }
-        setLlmStatus('ready');
-        setLlmProgress('Model ready');
+      // Type the answer out rather than dumping it — the pause reads as
+      // consideration, and it gives long answers a moment to be scanned.
+      for (let i = 2; i <= text.length; i += 4) {
+        setMessages((m) =>
+          m.map((msg) => (msg.id === botId ? { ...msg, content: text.slice(0, i), streaming: true } : msg))
+        );
+        await new Promise((resolve) => setTimeout(resolve, 6));
       }
 
-      let finalText = '';
-      if (runtime === 'transformers') {
-        finalText = await generateTransformersCompletion({
-          modelId: runtimeModel,
-          messages: llmMessages,
-        });
-
-        // Simulate incremental paint so UI behavior is consistent across runtimes.
-        if (finalText) {
-          for (let i = 2; i <= finalText.length; i += 4) {
-            const partial = finalText.slice(0, i);
-            setMessages((m) =>
-              m.map((msg) => (msg.id === botId ? { ...msg, content: partial, streaming: true } : msg))
-            );
-            await new Promise((resolve) => setTimeout(resolve, 8));
-          }
-        }
-      } else {
-        finalText = await streamChatCompletion({
-          messages: llmMessages,
-          onChunk: (fullText) => {
-            setMessages((m) =>
-              m.map((msg) => (msg.id === botId ? { ...msg, content: fullText, streaming: true } : msg))
-            );
-          },
-        });
-      }
-
-      const resolved = finalText || getResponse(q);
       setMessages((m) =>
-        m.map((msg) => (msg.id === botId ? { ...msg, content: resolved, streaming: false } : msg))
-      );
-    } catch (error) {
-      console.error('Local runtime chat error:', error);
-      setLlmStatus('error');
-      setLlmProgress('Model unavailable, using fallback responses');
-      const fallback = `${getResponse(q)}\n\n(Note: Local model is unavailable right now.)`;
-      setMessages((m) =>
-        m.map((msg) => (msg.id === botId ? { ...msg, content: fallback, streaming: false } : msg))
+        m.map((msg) => (msg.id === botId ? { ...msg, content: text, streaming: false } : msg))
       );
     } finally {
       setThinking(false);
@@ -368,59 +246,9 @@ export default function AIChat() {
               <div>
                 <p className="text-sm font-semibold text-slate-900 dark:text-white">Ask about Kasi</p>
                 <p className="text-[11px] text-slate-500 dark:text-slate-500">
-                  {llmStatus === 'ready'
-                    ? `${runtime === 'transformers' ? 'Transformers.js' : 'WebLLM'} · ${
-                        runtime === 'transformers' ? runtimeModel : WEBLLM_MODEL
-                      }`
-                    : llmStatus === 'loading'
-                    ? llmProgress || 'Loading local model...'
-                    : llmStatus === 'error'
-                    ? 'Fallback mode · Local model unavailable'
-                    : `${runtime === 'transformers' ? 'Transformers.js' : 'WebLLM'} · Initializing on open`}
+                  {REMOTE_ENABLED ? 'Live · grounded in portfolio data' : 'Instant · works offline'}
                 </p>
               </div>
-            </div>
-
-            <div className="px-4 py-2 border-b border-white/5 bg-slate-50/60 dark:bg-slate-900/20 flex gap-2 items-center">
-              <label className="text-[11px] text-slate-500 dark:text-slate-400">Runtime</label>
-              <select
-                value={runtime}
-                onChange={(e) => {
-                  setRuntime(e.target.value);
-                  setLlmStatus('idle');
-                  setLlmProgress('');
-                }}
-                disabled={thinking}
-                className="text-[11px] px-2 py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200"
-              >
-                {RUNTIME_OPTIONS.map((opt) => (
-                  <option key={opt.id} value={opt.id}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
-
-              {runtime === 'transformers' && (
-                <>
-                  <label className="text-[11px] text-slate-500 dark:text-slate-400">Model</label>
-                  <select
-                    value={runtimeModel}
-                    onChange={(e) => {
-                      setRuntimeModel(e.target.value);
-                      setLlmStatus('idle');
-                      setLlmProgress('');
-                    }}
-                    disabled={thinking}
-                    className="flex-1 text-[11px] px-2 py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200"
-                  >
-                    {TRANSFORMERS_MODEL_OPTIONS.map((model) => (
-                      <option key={model.id} value={model.id}>
-                        {model.label}
-                      </option>
-                    ))}
-                  </select>
-                </>
-              )}
             </div>
 
             {/* Messages */}
