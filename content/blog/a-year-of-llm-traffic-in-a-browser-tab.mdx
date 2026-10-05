@@ -1,0 +1,146 @@
+---
+title: "A Year of LLM Traffic, in a Browser Tab"
+description: "6.12 billion production LLM requests, explored interactively with DuckDB-WASM and Mosaic. No backend: a one-time rollup turns the 91 GB Parquet file on AWS S3 into 24 MB for the charts, and raw rows are still read live from S3."
+date: "2026-10-04"
+author: "Kasi Vandanapu"
+assistedBy: "Claude Code"
+tags: ["DuckDB", "Parquet", "Mosaic", "AWS S3", "LLM Serving", "Data Engineering"]
+draft: false
+---
+
+import ChutesCrossfilter from '@/components/viz/ChutesCrossfilter';
+
+The Harvard MadSys group published a year of production traffic from Chutes, a
+public LLM inference platform: **6.12 billion requests across 9,174 models**,
+April 2025 to April 2026, as one 91 GB Parquet file on AWS S3
+([*A Year in LLM Serving*](https://github.com/HarvardMadSys/chutes_workload)).
+
+The figure below explores all of it in your browser, with no backend. Filter on
+the left, drag across any chart, or press **Play**. **View raw & rollup data**
+shows one matching hour two ways: real requests read live from the file on S3,
+and the same hour as the rollup rows the charts are built from.
+
+<ChutesCrossfilter />
+
+## Architecture: roll up once, query in the browser
+
+```
+AWS S3 · chutes_trace.parquet          91 GB · 6.12B rows · one row per request
+   │                                  │
+   │ rolled up once (DuckDB)          │ read live (HTTP range requests)
+   ▼                                  ▼
+chutes.parquet   24 MB · 1.34M rows   Raw requests tab · SQL console
+served with this page                  ~15 MB per sample
+   │
+   ▼
+DuckDB-WASM + Mosaic, in your browser tab
+```
+
+**The problem.** Every chart here is a whole-year aggregate, and Parquet stores
+rows, not totals. Querying the S3 file directly for "requests per day" alone
+downloads 13.4 GB of timestamps; the full dashboard needs 45 GB of columns,
+per visitor. DuckDB's file pruning can't help: nothing can be skipped when
+every row counts.
+
+**The rollup.** So the aggregation runs once, ahead of time, at the coarsest
+grain the charts need: **one row per hour × model × function**.
+
+```sql
+SELECT date_trunc('hour', started_at) AS hour,
+       chute_id AS model, function_name,
+       count(*)   AS reqs,
+       sum(it)    AS sum_it,    count(it)   AS n_it,     -- input tokens
+       sum(ot)    AS sum_ot,    count(ot)   AS n_ot,     -- output tokens
+       sum(ttft)  AS sum_ttft,  count(ttft) AS n_ttft    -- time to first token
+FROM 's3://harvardsys-datasets/2026_chutes_anonymized/chutes_trace.parquet'
+GROUP BY ALL
+```
+
+6.12 billion rows become 1.34 million (models outside the top 200 are grouped
+as "other"), and 91 GB becomes 24 MB. It is exact, not sampled: counts and
+sums add up, so any coarser question (a day, a model family, all streaming
+traffic) is just a `sum()` over rollup rows, and the totals match the source
+file's own Parquet footer. Each sum keeps a count of the requests that actually
+had the value, so averages divide by measured values only.
+
+| | Charts and filters | Raw rows |
+|---|---|---|
+| Reads | The 24 MB rollup, served with the page | The 91 GB original on AWS S3 |
+| Download | Once, then browser cache | 7.8 MB footer once, then ~15 MB per sample |
+| Latency | Tens of ms per interaction | 4–15 s per sample (30 Mbps) |
+
+What the rollup gives up: anything finer than an hour, and individual requests.
+That is what the second path is for. To see the transformation itself, open
+**View raw & rollup data**: for one hour it shows the raw requests from S3 next
+to the rollup rows that replace them. A typical hour is about 680,000
+requests, stored as about 150 rows.
+
+**Raw rows, live from AWS.** S3 serves byte ranges, and the bucket allows
+browser (CORS) requests. DuckDB reads the Parquet footer, then fetches only the
+row groups that contain the hour you asked about. It never downloads the
+91 GB. Try `SELECT count(*) FROM trace` in the **What's running** console: it
+answers from the footer alone, in seconds.
+
+**Why interactions are fast.** Mosaic turns every control into one shared
+filter and pre-aggregates small cubes the first time you use one (a second or
+two). After that, each drag filters a cube, not the 1.34M-row rollup, in tens
+of milliseconds. More on that in
+[*A Million Rows, 30 Milliseconds a Frame*](/blog/how-mosaic-scales-interactive-aggregation/).
+
+## What the year shows
+
+- **DeepSeek lost the lead to Qwen.** DeepSeek served 85.4% of traffic in Q2
+  2025 and 35.7% by Q1 2026, when Qwen reached 38.5%. Group by **Model family**
+  to see the handover.
+- **Volume peaked in autumn 2025.** 21.5M requests a day in Q3 against 12.5M in
+  Q2; the busiest day, 29 October, carried 34.9M.
+- **It is almost all chat.** 86.1% chat, 13.1% completions. An average request
+  sends 6,321 tokens and gets back 445: prompt-heavy, not generation-heavy.
+- **There is no night.** The busiest and quietest hours differ by under one
+  percentage point (4.66% vs 3.94%): a global user base. The one gap is a
+  ~30-hour outage on 13–14 January 2026.
+
+## Caveats
+
+- **Dates are inferred.** Timestamps were shifted to start at 1970-01-01; the
+  calendar is recovered from model launch dates (18 of 20 agree). Hours of day
+  are on the trace's own clock, not UTC.
+- **Missing values are structural.** Time to first token is recorded only on
+  streaming calls, so it exists for 49% of requests. Token counts are missing
+  on 7.5%.
+- **Model family and type come from model names**, not from the trace.
+
+## Next: an agent that builds the rollup for you
+
+The rollup here was designed by hand. I looked at what the charts ask, picked
+the grain (hour × model × function), and chose which measures to keep. That
+works for one dashboard. It does not scale to a platform with billions of rows
+and hundreds of recurring reports, which is why most teams still scan the
+full table for questions that only ever need a summary.
+
+The next post builds an agent that does this design step automatically:
+
+1. **Learn the workload.** Read the queries a dashboard actually sends (this
+   figure already logs every one) and cluster them by grouping, measures and
+   filters.
+2. **Propose rollups.** Pick the coarsest grain that answers each cluster, keep
+   sums and counts for additive measures, and flag the ones that don't add up
+   (distinct users, percentiles).
+3. **Price them.** Estimate rollup size and bytes saved per query before
+   building anything, against a storage budget.
+4. **Build and verify** with DuckDB, checking every total against the source.
+5. **Route queries** to the smallest rollup that can answer them, and fall back
+   to the raw data otherwise. The agent proposes; deterministic code decides,
+   so an answer is never wrong.
+
+The test: pointed at this 91 GB trace and this dashboard's query log, can it
+rediscover the hour × model × function rollup on its own? It is the cost-aware
+planner I sketched at the end of
+[*A Million Rows, 30 Milliseconds a Frame*](/blog/how-mosaic-scales-interactive-aggregation/),
+made concrete.
+
+---
+
+*Data: Nixon et al., "A Year in LLM Serving," arXiv:2608.13573 (2026), CC BY 4.0,
+hosted on AWS S3 by the authors. Built with [Mosaic](https://idl.uw.edu/mosaic/)
+and DuckDB-WASM. Best viewed on a wide screen.*
