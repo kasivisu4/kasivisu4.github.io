@@ -7,6 +7,19 @@
     <language>en-us</language>
     <atom:link href="https://kasivisu4.github.io/feed.xml" rel="self" type="application/rss+xml"/>
     <item>
+      <title>A Year of LLM Traffic, in a Browser Tab</title>
+      <link>https://kasivisu4.github.io/blog/a-year-of-llm-traffic-in-a-browser-tab/</link>
+      <guid isPermaLink="true">https://kasivisu4.github.io/blog/a-year-of-llm-traffic-in-a-browser-tab/</guid>
+      <description>6.12 billion production LLM requests, explored interactively with DuckDB-WASM and Mosaic. No backend: a one-time rollup turns the 91 GB Parquet file on AWS S3 into 24 MB for the charts, and raw rows are still read live from S3.</description>
+      <pubDate>Sun, 04 Oct 2026 00:00:00 GMT</pubDate>
+      <category>DuckDB</category>
+      <category>Parquet</category>
+      <category>Mosaic</category>
+      <category>AWS S3</category>
+      <category>LLM Serving</category>
+      <category>Data Engineering</category>
+    </item>
+    <item>
       <title>A Million Rows, 30 Milliseconds a Frame</title>
       <link>https://kasivisu4.github.io/blog/how-mosaic-scales-interactive-aggregation/</link>
       <guid isPermaLink="true">https://kasivisu4.github.io/blog/how-mosaic-scales-interactive-aggregation/</guid>
