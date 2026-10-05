@@ -55,14 +55,12 @@ export const B_MB = 30;
 
 // --- the calendar -----------------------------------------------------------
 //
-// The release normalized every timestamp to a 1970-01-01 origin, so the trace
-// itself carries no dates. They are recovered from model launches: of 20
-// models with well-known public release dates, 18 first carry traffic on the
-// trace day that puts day 0 at 11 April 2025 (+-3 days; 14 of them to the
-// exact day -- e.g. DeepSeek-V3.1, released 21 Aug 2025, first appears on day
-// 132). The two outliers appear weeks *after* their release, never before,
-// which is what a late deployment on Chutes looks like. So dates here are
-// inferred to the day, and labelled as inferred wherever they are explained.
+// The release normalized every timestamp to a 1970-01-01 origin. The paper
+// (arXiv:2608.13573) states the span as 2025-04-11 to 2026-04-12, so day 0 is
+// 11 April 2025. Model launches agree independently: of 20 models with
+// well-known release dates, 18 first carry traffic on the day that implies
+// (14 to the exact day -- e.g. DeepSeek-V3.1, released 21 Aug 2025, first
+// appears on day 132); the other two appear weeks *after* release, never before.
 //
 // Hour of day cannot be recovered the same way: a trace "day" starts at the
 // first request's time of day, which is unknown, so hours stay on the trace
@@ -245,7 +243,7 @@ export function shortModel(name) {
 export const labelFor = (dim, value) =>
   dim === 'model' || dim === 'g_model' ? shortModel(value) : String(value);
 
-/** Day label for chips and logs: the inferred calendar date. */
+/** Day label for chips and logs: the calendar date. */
 export const formatDay = (d) => formatDateShort(d);
 
 export function formatHod(h) {

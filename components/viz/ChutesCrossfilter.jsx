@@ -1759,7 +1759,7 @@ export default function ChutesCrossfilter() {
       <figcaption className="mt-3 text-sm leading-relaxed text-slate-500 dark:text-slate-400">
         One year of production traffic from Chutes — {traceRows ? traceRows.toLocaleString('en-US') : '6.12 billion'}{' '}
         requests across 9,174 models. Charts read an hourly rollup of the trace; raw rows are read live from the original
-        91 GB file on AWS S3. Dates are inferred from model launches; hours are on the trace&rsquo;s own clock. Data:{' '}
+        91 GB file on AWS S3. Dates follow the paper&rsquo;s stated span; hours are on the trace&rsquo;s own clock. Data:{' '}
         <a
           href="https://github.com/HarvardMadSys/chutes_workload"
           target="_blank"
