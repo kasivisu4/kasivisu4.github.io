@@ -175,7 +175,7 @@ export default function RawData({ open, onClose, getWhere, filterCount, api }) {
           <Info label="About this view">
             One random hour that matches your filters, two ways. Raw requests are read live from the 91 GB parquet on
             AWS S3. Rollup rows are the same hour as stored in the 24 MB summary file every chart reads: one row per
-            model × function, holding counts and sums. Dates follow the paper's stated span; hours are on the trace clock.
+            model × function, holding counts and sums. Dates follow the paper&rsquo;s stated span; hours are on the trace clock.
           </Info>
           <span className="rounded-full bg-cyan-500/10 px-2 py-0.5 text-[11px] text-cyan-800 dark:text-cyan-200">
             {filterCount ? `${filterCount} filter${filterCount === 1 ? '' : 's'} applied` : 'no filters'}

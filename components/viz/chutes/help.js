@@ -40,7 +40,7 @@ export const HELP = {
   groupBy:
     'Colors every chart and the table by one dimension. Model, Function and Family show their top 8 and fold the rest into "Other". Switching keeps your filters.',
   period:
-    'Zoom to a calendar quarter or trailing window; it also filters everything else. The file's timestamps start at 1970; dates follow the paper's stated span, 11 Apr 2025 to 12 Apr 2026.',
+    'Zoom to a calendar quarter or trailing window; it also filters everything else. The file\'s timestamps start at 1970; dates follow the paper\'s stated span, 11 Apr 2025 to 12 Apr 2026.',
   exports: 'Download the timeline, as currently filtered, as a PNG.',
   rawData:
     'One random hour matching your filters, two ways: real requests read live from the 91 GB trace on AWS S3, and the same hour as rollup rows in the 24 MB summary file the charts read. Shows how raw requests become counts and sums.',
