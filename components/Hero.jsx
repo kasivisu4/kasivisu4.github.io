@@ -150,7 +150,7 @@ export default function Hero() {
             variants={fadeUp}
             className="text-base sm:text-lg text-slate-600 dark:text-slate-400 leading-relaxed max-w-xl"
           >
-            Senior Python Developer & Data Engineer with{' '}
+            Full Stack Engineer with{' '}
             <span className="text-slate-900 dark:text-slate-100 font-medium">5+ years</span>{' '}
             building scalable, cloud-native AI platforms. Expert in{' '}
             <span className="text-cyan-500 dark:text-cyan-400 font-medium">Python · FastAPI · LLMs · LangGraph</span>.
