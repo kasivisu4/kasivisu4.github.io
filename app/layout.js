@@ -20,11 +20,11 @@ const baseUrl = 'https://kasivisu4.github.io';
 export const metadata = {
   metadataBase: new URL(baseUrl),
   title: {
-    default: 'Kasi Vandanapu — Senior Python Developer & AI Engineer',
+    default: 'Kasi Vandanapu — Full Stack Engineer',
     template: '%s | Kasi Vandanapu',
   },
   description:
-    'Senior Python Developer & AI Engineer with 5+ years building LLM-powered agentic systems, FastAPI microservices, and scalable data platforms on AWS & GCP. Expert in LangChain, LangGraph, and production ML.',
+    'Full Stack Engineer with 5+ years building LLM-powered agentic systems, FastAPI microservices, and scalable data platforms on AWS & GCP. Expert in LangChain, LangGraph, and production ML.',
   keywords: [
     'Python Developer',
     'AI Engineer',
@@ -47,14 +47,14 @@ export const metadata = {
     locale: 'en_US',
     url: baseUrl,
     siteName: 'Kasi Vandanapu Portfolio',
-    title: 'Kasi Vandanapu — Senior Python Developer & AI Engineer',
+    title: 'Kasi Vandanapu — Full Stack Engineer',
     description:
       'Building LLM-powered agentic systems, FastAPI microservices, and scalable data platforms. 5+ years in Python, LangChain, LangGraph, AWS & GCP.',
     images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'Kasi Vandanapu Portfolio' }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Kasi Vandanapu — Senior Python Developer & AI Engineer',
+    title: 'Kasi Vandanapu — Full Stack Engineer',
     description: 'Building LLM-powered agentic systems, FastAPI microservices, and scalable data platforms.',
     images: ['/og-image.png'],
   },
@@ -73,8 +73,8 @@ const jsonLd = {
   name: 'Kasi Vandanapu',
   url: baseUrl,
   email: 'kasivisu3109@gmail.com',
-  jobTitle: 'Senior Python Developer & AI Engineer',
-  description: 'Senior Python Developer & Data Engineer specializing in LLM-powered agentic systems, FastAPI, and scalable data platforms.',
+  jobTitle: 'Full Stack Engineer',
+  description: 'Full Stack Engineer specializing in LLM-powered agentic systems, FastAPI, and scalable data platforms.',
   sameAs: [
     'https://www.linkedin.com/in/kasivisu4/',
     'https://github.com/kasivisu4',
